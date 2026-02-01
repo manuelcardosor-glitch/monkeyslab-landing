@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Software para talleres técnicos de celulares que elimina reclamaciones injustas con evidencia fotográfica, órdenes digitales y control total. Implementación en 48-72h.">
+    
+    <!-- Open Graph para WhatsApp/Facebook -->
+    <meta property="og:title" content="MONKEYS Lab - Software para Talleres Técnicos">
+    <meta property="og:description" content="Evita reclamaciones y pérdidas con evidencia fotográfica + órdenes digitales. Sistema completo desde el celular.">
+    <meta property="og:image" content="https://tu-dominio.com/og-image.jpg">
+    <meta property="og:url" content="https://tu-dominio.com">
+    <meta property="og:type" content="website">
+    
+    <title>MONKEYS Lab - Software para Talleres Técnicos de Celulares</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        /* Hero Section */
+        .hero { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 80px 20px 60px; text-align: center; }
+        .hero h1 { font-size: 2.8rem; margin-bottom: 20px; font-weight: 800; line-height: 1.2; }
+        .hero .subtitle { font-size: 1.4rem; margin-bottom: 30px; opacity: 0.95; line-height: 1.5; }
+        .hero .pain-point { font-size: 1.6rem; margin-bottom: 40px; font-weight: 600; background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px; font-style: italic; }
+        .cta-button { display: inline-block; background: #ff6b6b; color: white; padding: 18px 40px; font-size: 1.3rem; text-decoration: none; border-radius: 50px; font-weight: bold; transition: transform 0.3s; margin: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .cta-button:hover { transform: scale(1.05); }
+        .cta-secondary { background: white; color: #667eea; }
+        
+        /* How It Works Section */
+        .how-it-works { background: white; padding: 80px 20px; }
+        .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 20px; color: #333; }
+        .section-subtitle { text-align: center; font-size: 1.2rem; color: #666; margin-bottom: 50px; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; margin-top: 40px; }
+        .step-card { background: #f8f9fa; padding: 40px 30px; border-radius: 15px; text-align: center; position: relative; }
+        .step-number { width: 60px; height: 60px; background: #667eea; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; margin: 0 auto 20px; }
+        .step-card h3 { color: #667eea; margin-bottom: 15px; font-size: 1.4rem; }
+        .step-card p { color: #555; line-height: 1.8; }
+        .tech-note { text-align: center; margin-top: 40px; padding: 20px; background: #e8f4fd; border-radius: 10px; font-size: 1.1rem; color: #0066cc; }
+        
+        /* Stats Section */
+        .stats { background: #f8f9fa; padding: 60px 20px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 40px; }
+        .stat-card { background: white; padding: 30px; text-align: center; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .stat-number { font-size: 3rem; color: #667eea; font-weight: bold; }
+        .stat-label { font-size: 1.1rem; color: #666; margin-top: 10px; }
+        .stat-note { font-size: 0.85rem; color: #999; margin-top: 10px; font-style: italic; }
+        .calculation-box { background: white; padding: 30px; border-radius: 15px; margin-top: 40px; border-left: 5px solid #667eea; }
+        .calculation-box h3 { color: #667eea; margin-bottom: 20px; }
+        .calculation-box ul { list-style: none; }
+        .calculation-box li { padding: 10px 0; padding-left: 30px; position: relative; }
+        .calculation-box li:before { content: "✓"; position: absolute; left: 0; color: #4ade80; font-weight: bold; }
+        
+        /* Problems Section */
+        .problems { padding: 80px 20px; background: white; }
+        .problems-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
+        .problem-card { background: #fff5f5; padding: 30px; border-left: 5px solid #ff6b6b; border-radius: 10px; }
+        .problem-card h3 { color: #ff6b6b; margin-bottom: 15px; font-size: 1.4rem; }
+        .problem-card p { color: #555; line-height: 1.8; }
+        
+        /* Solution Section */
+        .solution { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 80px 20px; }
+        .solution-intro { text-align: center; font-size: 1.3rem; margin-bottom: 50px; line-height: 1.8; max-width: 900px; margin-left: auto; margin-right: auto; }
+        .main-feature { background: rgba(255,255,255,0.15); padding: 40px; border-radius: 20px; margin-bottom: 50px; border: 3px solid rgba(255,255,255,0.3); }
+        .main-feature h3 { font-size: 2rem; margin-bottom: 20px; text-align: center; }
+        .main-feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px; }
+        .main-feature-item { background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; text-align: center; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        .feature-card { background: rgba(255,255,255,0.1); padding: 30px; border-radius: 15px; backdrop-filter: blur(10px); }
+        .feature-card h3 { margin-bottom: 15px; font-size: 1.3rem; }
+        .feature-card ul { list-style: none; }
+        .feature-card li { margin: 10px 0; padding-left: 25px; position: relative; }
+        .feature-card li:before { content: "✓"; position: absolute; left: 0; font-weight: bold; color: #4ade80; }
+        
+        /* Results Section */
+        .results { padding: 80px 20px; background: #f8f9fa; }
+        .results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; margin-top: 50px; }
+        .result-card { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .result-icon { font-size: 3rem; margin-bottom: 20px; }
+        .result-card h3 { color: #667eea; margin-bottom: 15px; font-size: 1.4rem; }
+        .result-card .number { font-size: 2.5rem; font-weight: bold; color: #4ade80; margin: 15px 0; }
+        
+        /* Testimonials */
+        .testimonials { padding: 80px 20px; background: white; }
+        .testimonial-card { background: #f8f9fa; padding: 40px; border-radius: 15px; margin: 30px 0; border-left: 5px solid #667eea; }
+        .testimonial-text { font-size: 1.2rem; font-style: italic; margin-bottom: 20px; line-height: 1.8; }
+        .testimonial-author { font-weight: bold; color: #667eea; display: flex; align-items: center; gap: 10px; }
+        .testimonial-verified { background: #4ade80; color: white; padding: 3px 10px; border-radius: 5px; font-size: 0.8rem; }
+        
+        /* FAQ Section */
+        .faq { background: #f8f9fa; padding: 80px 20px; }
+        .faq-grid { max-width: 900px; margin: 0 auto; margin-top: 40px; }
+        .faq-item { background: white; padding: 30px; margin-bottom: 20px; border-radius: 15px; border-left: 5px solid #667eea; }
+        .faq-question { font-size: 1.3rem; font-weight: bold; color: #333; margin-bottom: 15px; }
+        .faq-answer { color: #555; line-height: 1.8; }
+        
+        /* Pricing Section */
+        .pricing { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 80px 20px; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 40px; margin-top: 50px; max-width: 1000px; margin-left: auto; margin-right: auto; }
+        .pricing-card { background: white; color: #333; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative; }
+        .pricing-card.featured { border: 5px solid #4ade80; transform: scale(1.05); }
+        .pricing-badge { background: #4ade80; color: white; padding: 8px 20px; border-radius: 20px; display: inline-block; margin-bottom: 20px; font-weight: bold; }
+        .pricing-card h3 { font-size: 1.8rem; margin-bottom: 20px; color: #667eea; }
+        .price { font-size: 3rem; font-weight: bold; color: #333; margin: 20px 0; }
+        .price-period { font-size: 1rem; color: #666; }
+        .price-old { text-decoration: line-through; color: #999; font-size: 1.5rem; margin-right: 10px; }
+        .pricing-features { list-style: none; margin: 30px 0; }
+        .pricing-features li { padding: 12px 0; border-bottom: 1px solid #eee; position: relative; padding-left: 30px; }
+        .pricing-features li:before { content: "✓"; position: absolute; left: 0; color: #4ade80; font-weight: bold; }
+        .implementation-details { background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0; }
+        .implementation-details h4 { color: #667eea; margin-bottom: 10px; font-size: 1.1rem; }
+        .implementation-details ul { list-style: none; font-size: 0.95rem; }
+        .implementation-details li { padding: 5px 0; padding-left: 20px; position: relative; }
+        .implementation-details li:before { content: "→"; position: absolute; left: 0; color: #667eea; }
+        
+        /* CTA Section */
+        .final-cta { background: #ff6b6b; color: white; padding: 80px 20px; text-align: center; }
+        .final-cta h2 { font-size: 2.5rem; margin-bottom: 30px; }
+        .final-cta p { font-size: 1.3rem; margin-bottom: 40px; }
+        
+        /* Demo Benefits */
+        .demo-benefits { background: white; padding: 60px 20px; }
+        .demo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; max-width: 900px; margin: 40px auto 0; }
+        .demo-item { text-align: center; padding: 20px; }
+        .demo-item h4 { color: #667eea; margin-bottom: 10px; font-size: 1.2rem; }
+        
+        /* Footer */
+        .footer { background: #2d3748; color: white; padding: 40px 20px; text-align: center; }
+        
+        /* Sticky CTA Mobile */
+        .sticky-cta { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: #ff6b6b; padding: 15px 20px; z-index: 1000; box-shadow: 0 -5px 20px rgba(0,0,0,0.3); }
+        .sticky-cta a { display: block; background: white; color: #ff6b6b; padding: 15px; text-align: center; border-radius: 10px; font-weight: bold; text-decoration: none; font-size: 1.1rem; }
+        
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .hero .subtitle { font-size: 1.1rem; }
+            .hero .pain-point { font-size: 1.2rem; }
+            .section-title { font-size: 1.8rem; }
+            .sticky-cta { display: block; }
+            body { padding-bottom: 80px; }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="container">
+            <h1>Evita Reclamaciones y Pérdidas por Equipos "Sin Soporte" con Evidencia Fotográfica + Órdenes Digitales</h1>
+            <p class="subtitle">MONKEYS Lab organiza tu taller (órdenes, clientes, inventario y caja) desde el celular. Sin Excel, sin cuadernos, sin caos.</p>
+            <div class="pain-point">
+                "Entregué el celular funcionando, pero el cliente dice que venía rayado y no tengo cómo demostrarlo..."
+            </div>
+            <a href="https://wa.link/kzkc0n?text=Hola,%20quiero%20agendar%20una%20demo%20de%20MONKEYS%20Lab" class="cta-button">Agendar Demostración Gratis (15 min)</a>
+            <a href="#pricing" class="cta-button cta-secondary">Ver Precios</a>
+        </div>
+    </section>
+    
+    <!-- HOW IT WORKS SECTION -->
+    <section class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">Así Funciona en Tu Taller (3 Pasos)</h2>
+            <p class="section-subtitle">Sin complicaciones. Diseñado para que cualquier técnico lo use desde el primer día.</p>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3>Recibes el Equipo</h3>
+                    <p>Tomas <strong>fotos del estado inicial</strong> + check list físico/funcional + registras IMEI. Se genera automáticamente una <strong>orden con código QR único</strong> y PDF profesional.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3>Tu Técnico Actualiza Estados</h3>
+                    <p>Cambia el estado según avance: <strong>En Taller → Disponible para Entrega → Entregado</strong>. Registra repuestos usados, tiempos y observaciones.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3>El Cliente Recibe Notificación</h3>
+                    <p>Automáticamente le llega <strong>WhatsApp + PDF</strong> cuando su equipo está listo. Tú tienes evidencia fotográfica y control total de cada servicio.</p>
+                </div>
+            </div>
+            <div class="tech-note">
+                ✓ Funciona desde <strong>celular + computador</strong> (Android, iPhone, Windows, Mac)<br>
+                ✓ Requiere conexión a internet<br>
+                ✓ Implementación en <strong>48–72 horas</strong>
+            </div>
+        </div>
+    </section>
+    
+    <!-- STATS SECTION -->
+    <section class="stats">
+        <div class="container">
+            <h2 class="section-title">Resultados Típicos (Casos Reales de Talleres)</h2>
+            <p class="section-subtitle">Depende del volumen de órdenes y tipo de reclamaciones. En la demo te mostramos el cálculo específico para tu taller.</p>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">$3M</div>
+                    <div class="stat-label">Promedio recuperado por semana</div>
+                    <div class="stat-note">En talleres con 40+ órdenes/mes. Basado en reclamaciones evitadas con evidencia fotográfica.</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">2 hrs</div>
+                    <div class="stat-label">Ahorradas por día</div>
+                    <div class="stat-note">Promedio en talleres con 2-4 técnicos. Antes: buscando info en cuadernos.</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">10+</div>
+                    <div class="stat-label">Talleres activos</div>
+                    <div class="stat-note">En Bogotá, Medellín y Cali. Desde 2 hasta 6 empleados.</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3 años</div>
+                    <div class="stat-label">Perfeccionando el sistema</div>
+                    <div class="stat-note">Específicamente para talleres técnicos de celulares y tablets.</div>
+                </div>
+            </div>
+            <div class="calculation-box">
+                <h3>¿Cómo Se Calcula el Ahorro de $3M Semanales?</h3>
+                <ul>
+                    <li><strong>Reclamación típica sin respaldo:</strong> $1.5M–$3M (pantalla, daño cosmético, "así no venía")</li>
+                    <li><strong>Frecuencia en talleres informales:</strong> 1–2 reclamaciones por semana</li>
+                    <li><strong>Con MONKEYS Lab:</strong> Fotos del estado inicial = evidencia irrefutable = reclamación desestimada</li>
+                    <li><strong>Resultado:</strong> $3M+ mensuales que dejas de perder</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+    
+    <!-- PROBLEMS SECTION -->
+    <section class="problems">
+        <div class="container">
+            <h2 class="section-title">¿Te Identificas con Estos Problemas?</h2>
+            <div class="problems-grid">
+                <div class="problem-card">
+                    <h3>❌ Reclamaciones sin respaldo</h3>
+                    <p>El cliente dice que el celular venía rayado o con fallas, pero no tienes fotos ni registro del estado inicial. Terminas pagando $1-3M por reclamación injusta.</p>
+                </div>
+                <div class="problem-card">
+                    <h3>❌ Desorden total</h3>
+                    <p>Cuadernos perdidos, papelitos por todos lados, Excel que nadie actualiza. No sabes qué equipos están en taller, cuáles listos o cuáles ya entregados.</p>
+                </div>
+                <div class="problem-card">
+                    <h3>❌ Pérdida de tiempo</h3>
+                    <p>2-3 horas diarias buscando información: "¿Qué le hicimos a este cliente la última vez?" "¿Dónde anoté el IMEI?" "¿Cuándo ingresó este equipo?"</p>
+                </div>
+                <div class="problem-card">
+                    <h3>❌ Sin control de inventario</h3>
+                    <p>Te quedas sin repuestos clave en reparaciones urgentes. No sabes qué stock tienes, qué se vendió o qué falta pedir.</p>
+                </div>
+                <div class="problem-card">
+                    <h3>❌ Clientes molestos</h3>
+                    <p>No puedes decirle al cliente en qué estado está su equipo sin revisar físicamente. No hay forma de enviarle actualizaciones profesionales.</p>
+                </div>
+                <div class="problem-card">
+                    <h3>❌ Sin datos para crecer</h3>
+                    <p>No sabes cuánto vendes realmente, qué técnico es más productivo, qué marcas reparas más o cuáles son tus meses más fuertes.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- SOLUTION SECTION -->
+    <section class="solution">
+        <div class="container">
+            <h2 class="section-title">La Solución: MONKEYS Lab</h2>
+            <p class="solution-intro">Sistema completo diseñado específicamente para talleres técnicos de celulares, tablets y equipos móviles. No es un Excel mejorado ni un software genérico adaptado. Es una herramienta pensada desde cero para tu forma de trabajar.</p>
+            
+            <div class="main-feature">
+                <h3>🎯 Tu Arma Principal: Evidencia Fotográfica + Órdenes Digitales Completas</h3>
+                <div class="main-feature-grid">
+                    <div class="main-feature-item">
+                        <strong>📸 Fotos Estado Inicial</strong><br>
+                        <span style="font-size: 0.9rem;">Tu mejor defensa contra reclamaciones</span>
+                    </div>
+                    <div class="main-feature-item">
+                        <strong>✅ Check List Digital</strong><br>
+                        <span style="font-size: 0.9rem;">Físico + funcional completo</span>
+                    </div>
+                    <div class="main-feature-item">
+                        <strong>📱 Código QR Único</strong><br>
+                        <span style="font-size: 0.9rem;">Escanea y ve todo al instante</span>
+                    </div>
+                    <div class="main-feature-item">
+                        <strong>📄 PDF Automático</strong><br>
+                        <span style="font-size: 0.9rem;">Orden profesional generada</span>
+                    </div>
+                    <div class="main-feature-item">
+                        <strong>💬 WhatsApp al Cliente</strong><br>
+                        <span style="font-size: 0.9rem;">Notificaciones automáticas</span>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem;">Módulos Incluidos:</h3>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>👥 Base de Datos de Clientes</h3>
+                    <ul>
+                        <li>Autocompletado en nuevas órdenes</li>
+                        <li>Historial completo de servicios</li>
+                        <li>Búsqueda instantánea</li>
+                        <li>Notas y observaciones clave</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>📦 Control de Inventario</h3>
+                    <ul>
+                        <li>Repuestos y accesorios organizados</li>
+                        <li>Alertas de stock mínimo</li>
+                        <li>Control de compras a proveedores</li>
+                        <li>Fotos de cada producto</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>💰 Punto de Venta Digital</h3>
+                    <ul>
+                        <li>Venta rápida de accesorios</li>
+                        <li>Control de créditos/fiados</li>
+                        <li>Facturación integrada</li>
+                        <li>Comisiones por vendedor</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>💵 Gestión de Caja</h3>
+                    <ul>
+                        <li>Ingresos por servicios y ventas</li>
+                        <li>Gastos y costos fijos</li>
+                        <li>Resumen claro de flujo de caja</li>
+                        <li>Saber cuánto ganas realmente</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 Reportes y Dashboards</h3>
+                    <ul>
+                        <li>Servicios por periodo (día/semana/mes)</li>
+                        <li>Productividad por técnico</li>
+                        <li>Marcas y referencias más reparadas</li>
+                        <li>Estados de órdenes en tiempo real</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- RESULTS SECTION -->
+    <section class="results">
+        <div class="container">
+            <h2 class="section-title">Qué Cambia en Tu Taller con MONKEYS Lab</h2>
+            <div class="results-grid">
+                <div class="result-card">
+                    <div class="result-icon">📸</div>
+                    <h3>Cero Reclamaciones Injustas</h3>
+                    <div class="number">$3M/semana</div>
+                    <p>Recuperados con respaldo fotográfico de cada ingreso. El cliente no puede reclamar algo que está documentado desde el día 1.</p>
+                </div>
+                <div class="result-card">
+                    <div class="result-icon">⏱️</div>
+                    <h3>Tiempo Recuperado</h3>
+                    <div class="number">2 horas/día</div>
+                    <p>Que antes perdías buscando información en cuadernos. Ahora todo en 5 segundos desde tu celular o computador.</p>
+                </div>
+                <div class="result-card">
+                    <div class="result-icon">📈</div>
+                    <h3>Decisiones Basadas en Datos</h3>
+                    <div class="number">100% claridad</div>
+                    <p>Sabes qué técnico rinde más, qué marcas reparas, qué meses son mejores. Dejas de adivinar y empiezas a planear con números reales.</p>
+                </div>
+                <div class="result-card">
+                    <div class="result-icon">😊</div>
+                    <h3>Clientes Más Satisfechos</h3>
+                    <div class="number">5 estrellas</div>
+                    <p>Reciben notificaciones por WhatsApp del estado de su equipo. Te ven más profesional, organizado y confiable.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- TESTIMONIALS SECTION -->
+    <section class="testimonials">
+        <div class="container">
+            <h2 class="section-title">Lo Que Dicen Otros Talleres</h2>
+            <div class="testimonial-card">
+                <p class="testimonial-text">"Antes perdíamos 2 horas diarias buscando información en cuadernos y Excel. Ahora con MONKEYS Lab encontramos cualquier orden en 5 segundos y el cliente recibe notificaciones automáticas. Han sido $3M ahorrados solo en reclamaciones evitadas."</p>
+                <p class="testimonial-author">
+                    <span>— SmartLab, Bogotá</span>
+                    <span class="testimonial-verified">✓ Cliente Verificado</span>
+                </p>
+            </div>
+            <div class="testimonial-card">
+                <p class="testimonial-text">"El registro fotográfico nos salvó de una reclamación de $2.5M. El cliente decía que entregamos el celular con la pantalla rayada, pero teníamos las fotos del ingreso que demostraban que ya venía así. Sin MONKEYS Lab hubiéramos perdido ese dinero."</p>
+                <p class="testimonial-author">
+                    <span>— Taller técnico, Medellín</span>
+                    <span class="testimonial-verified">✓ Cliente Verificado</span>
+                </p>
+            </div>
+            <div class="testimonial-card">
+                <p class="testimonial-text">"Lo mejor es que ahora sé exactamente cuánto estoy ganando. Antes no tenía idea si me alcanzaba o no. Los reportes me muestran todo: qué técnico es más productivo, qué repuestos se venden más, en qué horarios tenemos más trabajo. Es tomar decisiones con datos reales."</p>
+                <p class="testimonial-author">
+                    <span>— Dueño de taller técnico, Cali</span>
+                    <span class="testimonial-verified">✓ Cliente Verificado</span>
+                </p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- FAQ SECTION -->
+    <section class="faq" id="faq">
+        <div class="container">
+            <h2 class="section-title">Preguntas Frecuentes</h2>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <div class="faq-question">¿Funciona sin internet?</div>
+                    <div class="faq-answer">No, MONKEYS Lab requiere conexión a internet para funcionar. Es un sistema en la nube que te permite acceder desde cualquier dispositivo en tiempo real.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">¿En qué dispositivos funciona?</div>
+                    <div class="faq-answer">En cualquier dispositivo con navegador web: celulares Android, iPhone, tablets, computadores Windows, Mac. No necesitas instalar ninguna aplicación.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">¿Cuánto tarda la implementación?</div>
+                    <div class="faq-answer">Entre 48 y 72 horas desde que confirmas. Incluye: configuración del sistema, carga de usuarios, plantillas de órdenes personalizadas y capacitación completa (1-2 sesiones de 2-3 horas).</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">¿Qué pasa después de los 30 días de soporte?</div>
+                    <div class="faq-answer">El soporte continúa incluido en la anualidad. Los 30 días iniciales son de soporte intensivo para resolver cualquier duda. Después, puedes contactarnos por WhatsApp cuando necesites.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">¿Puedo tener 2 sedes o sucursales?</div>
+                    <div class="faq-answer">Sí. El sistema permite múltiples sedes con inventarios separados y reportes consolidados. Esto se configura durante la implementación según tus necesidades.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">¿Se pueden exportar los datos?</div>
+                    <div class="faq-answer">Sí. Puedes exportar reportes a Excel/PDF en cualquier momento. Tus datos son tuyos y tienes control total sobre ellos.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">¿Puedo tener roles diferentes por técnico/asesor?</div>
+                    <div class="faq-answer">Sí. El sistema maneja permisos por rol: dueño (acceso total), técnico (solo órdenes), vendedor (solo POS), etc. Se configura según tu equipo.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">¿Incluye facturación electrónica legal?</div>
+                    <div class="faq-answer">No incluye facturación electrónica con validación DIAN. El módulo de facturación es para control interno. Si necesitas integración con facturación legal, tiene costo adicional.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- PRICING SECTION -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <h2 class="section-title">Inversión</h2>
+            <p style="text-align: center; font-size: 1.2rem; margin-bottom: 20px;">Recuperas la inversión evitando una sola reclamación grande</p>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>Plan Básico</h3>
+                    <p>Para talleres pequeños (1-2 personas)</p>
+                    <div class="price">
+                        <span class="price-old">$1.800.000</span>
+                        $1.600.000
+                    </div>
+                    <p class="price-period">Primer año (implementación + anualidad)</p>
+                    <p style="margin: 15px 0; color: #4ade80; font-weight: bold;">🎁 Ahorra $200.000 - Solo Febrero 2026</p>
+                    
+                    <div class="implementation-details">
+                        <h4>Qué Incluye la Implementación:</h4>
+                        <ul>
+                            <li>Cargamos tus técnicos y usuarios (1-2)</li>
+                            <li>Plantilla de orden + check list personalizado</li>
+                            <li>Capacitación 1 sesión (2-3 horas)</li>
+                            <li>Configuración básica de inventario</li>
+                        </ul>
+                    </div>
+                    
+                    <ul class="pricing-features">
+                        <li>Órdenes de Servicio (básico con fotos)</li>
+                        <li>Base de datos de clientes</li>
+                        <li>Inventario simple</li>
+                        <li>Reportes esenciales</li>
+                        <li>Soporte 30 días post-implementación</li>
+                        <li>Hosting año 1 incluido</li>
+                        <li>1-2 usuarios</li>
+                    </ul>
+                    <p style="margin-top: 20px; font-weight: bold;">Desde el año 2: $1.000.000/año</p>
+                    <a href="https://wa.link/kzkc0n?text=Hola,%20quiero%20el%20Plan%20Básico%20de%20MONKEYS%20Lab" class="cta-button" style="width: 100%; text-align: center; margin-top: 30px;">Agendar Demo</a>
+                </div>
+                
+                <div class="pricing-card featured">
+                    <div class="pricing-badge">⭐ MÁS POPULAR</div>
+                    <h3>Plan Completo</h3>
+                    <p>Recomendado (talleres 2-6 personas)</p>
+                    <div class="price">
+                        <span class="price-old">$2.400.000</span>
+                        $2.000.000
+                    </div>
+                    <p class="price-period">Primer año (implementación + anualidad)</p>
+                    <p style="margin: 15px 0; color: #4ade80; font-weight: bold;">🎁 Ahorra $400.000 - Solo Febrero 2026</p>
+                    
+                    <div class="implementation-details">
+                        <h4>Qué Incluye la Implementación:</h4>
+                        <ul>
+                            <li>Cargamos tus técnicos, usuarios y servicios (2-4)</li>
+                            <li>Plantillas de orden + check list + cotizaciones</li>
+                            <li>Capacitación 2 sesiones (equipo completo)</li>
+                            <li>Configuración completa de inventario + alertas</li>
+                            <li>Integración WhatsApp Business (si tienes)</li>
+                        </ul>
+                    </div>
+                    
+                    <ul class="pricing-features">
+                        <li>Órdenes de Servicio COMPLETO (QR + fotos + PDF + WhatsApp)</li>
+                        <li>Clientes con autocompletado</li>
+                        <li>Inventario con alertas de stock</li>
+                        <li>Punto de Venta digital completo</li>
+                        <li>Gestión de Caja completa</li>
+                        <li>Reportes avanzados (dashboards por técnico)</li>
+                        <li>Soporte 30 días post-implementación</li>
+                        <li>Hosting + mantenimiento año 1</li>
+                        <li>2-4 usuarios</li>
+                    </ul>
+                    <p style="margin-top: 20px; font-weight: bold;">Desde el año 2: $1.200.000/año</p>
+                    <a href="https://wa.link/kzkc0n?text=Hola,%20quiero%20el%20Plan%20Completo%20de%20MONKEYS%20Lab" class="cta-button" style="width: 100%; text-align: center; margin-top: 30px; background: #4ade80;">¡Quiero Este! 🚀</a>
+                </div>
+            </div>
+            <p style="text-align: center; margin-top: 50px; font-size: 1.2rem;">💳 Pago en 2 cuotas: 30% al aprobar ($600K–$720K) + 70% al entregar y capacitar</p>
+            <p style="text-align: center; margin-top: 20px; font-size: 1.1rem;">✅ Garantía: 30 días para ajustes sin costo adicional</p>
+        </div>
+    </section>
+    
+    <!-- DEMO BENEFITS -->
+    <section class="demo-benefits">
+        <div class="container">
+            <h2 class="section-title">Lo Que Recibes en la Demo (15 min)</h2>
+            <div class="demo-grid">
+                <div class="demo-item">
+                    <h4>✓ Te mostramos el flujo completo</h4>
+                    <p>Desde que ingresa un equipo hasta que sale. Verás cómo funciona TODO en tiempo real.</p>
+                </div>
+                <div class="demo-item">
+                    <h4>✓ Te cotizamos según tu caso</h4>
+                    <p>Usuarios, sedes, volumen de órdenes. Calculamos la inversión exacta para tu taller.</p>
+                </div>
+                <div class="demo-item">
+                    <h4>✓ Te decimos si te conviene o no</h4>
+                    <p>Si tu taller no necesita el sistema completo, te lo diremos. No vendemos por vender.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- FINAL CTA -->
+    <section class="final-cta">
+        <div class="container">
+            <h2>¿Listo Para Dejar de Perder Dinero por Desorden?</h2>
+            <p>Agenda una demostración de 15 minutos y ve cómo MONKEYS Lab resuelve tus problemas específicos</p>
+            <a href="https://wa.link/kzkc0n?text=Hola,%20quiero%20agendar%20demo%20de%20MONKEYS%20Lab" class="cta-button cta-secondary" style="font-size: 1.5rem; padding: 20px 50px;">Agendar Demostración Gratis</a>
+            <p style="margin-top: 30px; font-size: 1.1rem;">📱 WhatsApp: +57 320-435-9590</p>
+            <p style="margin-top: 10px;">⚡ Oferta de lanzamiento válida solo hasta el 28 de febrero 2026</p>
+        </div>
+    </section>
+    
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 MONKEYS Lab - Software para Talleres Técnicos</p>
+            <p style="margin-top: 10px; opacity: 0.8;">10+ talleres verificados | 3 años de experiencia | Bogotá, Medellín, Cali</p>
+            <p style="margin-top: 20px; font-size: 0.9rem;"><a href="#faq" style="color: white; text-decoration: underline;">Preguntas Frecuentes</a> | <a href="mailto:contacto@tudominio.com" style="color: white; text-decoration: underline;">Contacto</a></p>
+        </div>
+    </footer>
+    
+    <!-- STICKY CTA MOBILE -->
+    <div class="sticky-cta">
+        <a href="https://wa.link/kzkc0n?text=Hola,%20quiero%20agendar%20demo%20de%20MONKEYS%20Lab">Agendar Demo Gratis</a>
+    </div>
+    
+</body>
+</html>
