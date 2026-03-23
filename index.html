@@ -11,8 +11,11 @@
     <meta property="og:description" content="+35 laboratorios activos. Colombia · Chile · Perú · Ecuador. Demo gratis.">
     <meta property="og:locale" content="es_CO">
 
-    <!-- Meta Pixel placeholder -->
-    <script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');</script>
+    <!-- Meta Pixel — reemplaza TU_PIXEL_ID con tu ID real de Meta Business -->
+    <script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    // fbq('init', 'TU_PIXEL_ID'); // ← descomentar y poner ID real
+    // fbq('track', 'PageView');
+    </script>
 
     <!-- FONTS: Press Start 2P para logo, Bebas Neue para títulos, DM Sans para cuerpo -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -343,7 +346,8 @@
         .sticky-bar{display:block}
         body{padding-bottom:70px}
         .footer-inner{flex-direction:column;align-items:flex-start}
-        .test-card{padding:28px 20px}
+        .mk-card{padding:28px 20px}
+        .mk-test-section{padding:64px 20px}
     }
 
     /* ════ VSL SECTION ════ */
@@ -520,7 +524,7 @@
 <nav>
     <div class="nav-inner">
         <a class="nav-logo" href="#">
-            <img class="nav-logo-img" src="/mnt/user-data/uploads/Logo_de_MonKeys_en_Pixel_Art.png" alt="MonKeys Logo" onerror="this.style.display='none'">
+            <img class="nav-logo-img" src="logo.png" alt="MonKeys Logo" onerror="this.style.display='none'">
             <div class="nav-logo-text">MONKEYS<span>.LAB</span><br><span style="color:rgba(0,0,0,.35);font-size:.45rem">DESARROLLO DE APPS</span></div>
         </a>
         <a class="nav-cta" href="https://calendar.app.google/RtZqsytYkhhLRdze7" target="_blank" rel="noopener noreferrer" onclick="trackEvent('nav','click','Nav CTA')">
@@ -670,92 +674,48 @@
 
 
 <!-- ════════════════════════════════════════════
-  SECCIÓN 2 · DOLORES — AGITACIÓN
-  DotCom: El visitante dice "eso soy yo".
-════════════════════════════════════════════ -->
-<section class="pain-section" id="dolores">
-    <div class="container">
-        <span class="pain-label"><span class="tdot"></span>¿Te suena familiar?</span>
-
-        <h2 class="t-display">
-            Llevas años trabajando así.<br>
-            Y ya sabes que <span>algo está mal.</span>
-        </h2>
-
-        <div class="pains-grid">
-
-            <div class="pain-card scroll-reveal">
-                <span class="pain-num">01</span>
-                <span class="pain-icon">🤬</span>
-                <h3>El cliente que siempre tiene la razón… aunque no la tenga</h3>
-                <p>Entregaste el equipo impecable. Él dice lo contrario. Sin pruebas, terminas cediendo — y pierdes plata de todas formas.</p>
-            </div>
-
-            <div class="pain-card scroll-reveal d1">
-                <span class="pain-num">02</span>
-                <span class="pain-icon">📒</span>
-                <h3>El cuaderno que nadie entiende (ni tú)</h3>
-                <p>Anotaciones a medias, tachados, hojas sueltas. Cada vez que un cliente llama, buscas 5 minutos antes de responder.</p>
-            </div>
-
-            <div class="pain-card scroll-reveal d2">
-                <span class="pain-num">03</span>
-                <span class="pain-icon">🔧</span>
-                <h3>Sin repuesto en la mitad de la reparación</h3>
-                <p>No había un sistema que te avisara. El cliente espera, la reputación sufre — y tú sales corriendo a buscarlo.</p>
-            </div>
-
-            <div class="pain-card scroll-reveal d1">
-                <span class="pain-num">04</span>
-                <span class="pain-icon">💸</span>
-                <h3>No sabes exactamente cuánto ganas</h3>
-                <p>Al final del mes no tienes un número claro. Solo una sensación de que "no alcanzó" sin poder explicar por qué.</p>
-            </div>
-
-            <div class="pain-card scroll-reveal d2">
-                <span class="pain-num">05</span>
-                <span class="pain-icon">😤</span>
-                <h3>Cada técnico hace las cosas "a su manera"</h3>
-                <p>Sin proceso estándar, sin registro, sin responsabilidad clara. Si algo falla, nadie sabe quién, cuándo ni cómo.</p>
-            </div>
-
-            <div class="pain-card scroll-reveal d3">
-                <span class="pain-num">06</span>
-                <span class="pain-icon">😰</span>
-                <h3>Quieres crecer, pero así no puedes</h3>
-                <p>Con este desorden no puedes abrir otra sede, delegar con confianza ni escalar. El caos te tiene atrapado.</p>
-            </div>
-
-        </div>
-
-        <div class="pain-self-check scroll-reveal">
-            <span class="check-icon">👆</span>
-            <p>
-                Si te identificaste con 2 o más puntos,
-                <strong>no es falta de esfuerzo ni dedicación.</strong>
-                Es que estás operando sin las herramientas correctas.
-                Y eso tiene solución — una que puedes descubrir en minutos.
-            </p>
-        </div>
-    </div>
-</section>
-
-
-<!-- ════════════════════════════════════════════
-  SECCIÓN 3 · TEST DE DIAGNÓSTICO
+  SECCIÓN 2 · TEST DE DIAGNÓSTICO
   DotCom: Qualifica al prospecto. Captura el lead.
-  Preguntas optimizadas + gate antes del resultado.
+  MOVIDO ANTES DE DOLORES — el test ES el hook de calificación.
+  El visitante que completa el test está listo para la demo.
 ════════════════════════════════════════════ -->
-<section class="mk-test-section" id="test-section">
+<section class="mk-test-section" id="test-section" style="background:var(--ink);padding:100px 24px;">
     <div class="container">
 
-        <div class="mk-test-header scroll-reveal">
-            <span class="mk-test-label"><span class="tdot"></span>Diagnóstico gratuito</span>
-            <h2 class="t-display">¿Cuánto control real<br>tienes sobre tu negocio?</h2>
-            <p>6 preguntas. 2 minutos. Un diagnóstico honesto — y una calculadora gratis que te muestra cuánto ganas de verdad por cada reparación.</p>
+        <div class="mk-test-header scroll-reveal" style="max-width:760px;margin:0 auto 56px;">
+
+            <!-- EYEBROW -->
+            <div style="display:inline-flex;align-items:center;gap:10px;background:rgba(29,185,84,.12);border:1px solid rgba(29,185,84,.3);color:var(--green);font-size:1rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:10px 24px;border-radius:100px;margin-bottom:28px;">
+                <span style="width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;animation:blink 1.4s infinite;flex-shrink:0"></span>
+                Diagnóstico gratuito · 2 minutos
+            </div>
+
+            <!-- HEADLINE PRINCIPAL — el hook real -->
+            <h2 class="t-display" style="font-size:clamp(2.8rem,6vw,5rem);line-height:1.0;letter-spacing:.01em;color:#fff;margin-bottom:20px;">
+                ¿Cuánta plata estás<br>
+                perdiendo <span style="color:var(--green)">sin saberlo?</span>
+            </h2>
+
+            <!-- SUBHEAD con urgencia -->
+            <p style="font-size:1.08rem;color:rgba(255,255,255,.65);line-height:1.78;max-width:580px;margin:0 auto 28px;text-align:center;">
+                6 preguntas. 2 minutos. Un diagnóstico honesto del estado real de tu operación —
+                y una <strong style="color:#fff">Calculadora de Rentabilidad gratis</strong> que te muestra
+                exactamente cuánto ganas (o pierdes) por cada reparación.
+            </p>
+
+            <!-- SOCIAL PROOF INLINE -->
+            <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:center;">
+                <div style="display:flex;">
+                    <span style="width:28px;height:28px;border-radius:50%;background:#1a2744;border:2px solid rgba(29,185,84,.4);display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:700;color:#fff;flex-shrink:0;">SF</span>
+                    <span style="width:28px;height:28px;border-radius:50%;background:#2d4a8a;border:2px solid rgba(29,185,84,.4);display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:700;color:#fff;flex-shrink:0;margin-left:-6px;">TM</span>
+                    <span style="width:28px;height:28px;border-radius:50%;background:#1DB954;border:2px solid rgba(29,185,84,.4);display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:700;color:#fff;flex-shrink:0;margin-left:-6px;">+32</span>
+                </div>
+                <span style="font-size:.8rem;color:rgba(255,255,255,.45);">Más de <strong style="color:rgba(255,255,255,.75);">35 laboratorios</strong> ya lo hicieron · ¿Cuál es tu resultado?</span>
+            </div>
+
         </div>
 
-        <div class="mk-card scroll-reveal d1" id="mkTestCard">
+        <div class="mk-card scroll-reveal d1" id="mkTestCard" style="max-width:760px;margin:0 auto;">
 
             <!-- PROGRESS -->
             <div class="mk-prog-wrap" id="mkProgWrap">
@@ -979,6 +939,82 @@
         </div><!-- /mk-card -->
     </div>
 </section>
+
+
+<!-- ════════════════════════════════════════════
+  SECCIÓN 3 · DOLORES — AGITACIÓN
+  DotCom: El visitante dice "eso soy yo".
+  (El test ya calificó — ahora agitamos para profundizar)
+════════════════════════════════════════════ -->
+<section class="pain-section" id="dolores">
+    <div class="container">
+        <span class="pain-label"><span class="tdot"></span>¿Te suena familiar?</span>
+
+        <h2 class="t-display">
+            Llevas años trabajando así.<br>
+            Y ya sabes que <span>algo está mal.</span>
+        </h2>
+
+        <div class="pains-grid">
+
+            <div class="pain-card scroll-reveal">
+                <span class="pain-num">01</span>
+                <span class="pain-icon">🤬</span>
+                <h3>El cliente que siempre tiene la razón… aunque no la tenga</h3>
+                <p>Entregaste el equipo impecable. Él dice lo contrario. Sin pruebas, terminas cediendo — y pierdes plata de todas formas.</p>
+            </div>
+
+            <div class="pain-card scroll-reveal d1">
+                <span class="pain-num">02</span>
+                <span class="pain-icon">📒</span>
+                <h3>El cuaderno que nadie entiende (ni tú)</h3>
+                <p>Anotaciones a medias, tachados, hojas sueltas. Cada vez que un cliente llama, buscas 5 minutos antes de responder.</p>
+            </div>
+
+            <div class="pain-card scroll-reveal d2">
+                <span class="pain-num">03</span>
+                <span class="pain-icon">🔧</span>
+                <h3>Sin repuesto en la mitad de la reparación</h3>
+                <p>No había un sistema que te avisara. El cliente espera, la reputación sufre — y tú sales corriendo a buscarlo.</p>
+            </div>
+
+            <div class="pain-card scroll-reveal d1">
+                <span class="pain-num">04</span>
+                <span class="pain-icon">💸</span>
+                <h3>No sabes exactamente cuánto ganas</h3>
+                <p>Al final del mes no tienes un número claro. Solo una sensación de que "no alcanzó" sin poder explicar por qué.</p>
+            </div>
+
+            <div class="pain-card scroll-reveal d2">
+                <span class="pain-num">05</span>
+                <span class="pain-icon">😤</span>
+                <h3>Cada técnico hace las cosas "a su manera"</h3>
+                <p>Sin proceso estándar, sin registro, sin responsabilidad clara. Si algo falla, nadie sabe quién, cuándo ni cómo.</p>
+            </div>
+
+            <div class="pain-card scroll-reveal d3">
+                <span class="pain-num">06</span>
+                <span class="pain-icon">😰</span>
+                <h3>Quieres crecer, pero así no puedes</h3>
+                <p>Con este desorden no puedes abrir otra sede, delegar con confianza ni escalar. El caos te tiene atrapado.</p>
+            </div>
+
+        </div>
+
+        <div class="pain-self-check scroll-reveal">
+            <span class="check-icon">👆</span>
+            <p>
+                Si te identificaste con 2 o más puntos,
+                <strong>no es falta de esfuerzo ni dedicación.</strong>
+                Es que estás operando sin las herramientas correctas.
+                Y eso tiene solución — una que puedes descubrir en minutos.
+            </p>
+        </div>
+    </div>
+</section>
+
+
+<!-- TEST SECTION MOVIDO ARRIBA (antes de dolores) -->
 
 
 <!-- ════════════════════════════════════════════
@@ -1232,7 +1268,7 @@
 <footer>
     <div class="footer-inner">
         <div class="footer-logo-wrap">
-            <img class="footer-logo-img" src="/mnt/user-data/uploads/Logo_de_MonKeys_en_Pixel_Art.png" alt="MonKeys" onerror="this.style.display='none'">
+            <img class="footer-logo-img" src="logo.png" alt="MonKeys" onerror="this.style.display='none'">
             <div class="footer-logo-text">MONKEYS<span>.LAB</span><br><span style="color:rgba(255,255,255,.25)">DESARROLLO DE APPS</span></div>
         </div>
         <div class="footer-links">
@@ -1351,7 +1387,13 @@ function mkSubmit(){
     else document.getElementById('mkName').classList.remove('mk-err');
     if(!phone){document.getElementById('mkPhone').classList.add('mk-err');ok=false;}
     else document.getElementById('mkPhone').classList.remove('mk-err');
-    if(!consent){ok=false;}
+    if(!consent){
+        document.getElementById('mkConsent').style.outline='2px solid var(--red)';
+        document.getElementById('mkConsent').style.outlineOffset='2px';
+        ok=false;
+    } else {
+        document.getElementById('mkConsent').style.outline='';
+    }
     if(!ok) return;
 
     const fullPhone = code + ' ' + phone;
@@ -1423,11 +1465,17 @@ function mkRestart(){
     document.querySelectorAll('[id^=mkNext]').forEach(b=>b.disabled=true);
     document.getElementById('mkResult').classList.remove('mk-active');
     document.getElementById('mkGate').classList.remove('mk-active');
-    document.getElementById('mkProgWrap').style.display='';
+    // Restore progress bar (was hidden with inline style)
+    const progWrap = document.getElementById('mkProgWrap');
+    progWrap.style.display='';
+    progWrap.removeAttribute('style');
     document.getElementById('mkName').value='';
     document.getElementById('mkPhone').value='';
     document.getElementById('mkCity').value='';
     document.getElementById('mkConsent').checked=false;
+    document.getElementById('mkConsent').style.outline='';
+    // Reset all steps then activate step 1
+    document.querySelectorAll('.mk-step').forEach(s=>s.classList.remove('mk-active'));
     document.querySelector('.mk-step[data-step="1"]').classList.add('mk-active');
     document.getElementById('mkProgFill').style.width='0%';
     document.getElementById('mkProgLabel').textContent='Pregunta 1 de 6';
