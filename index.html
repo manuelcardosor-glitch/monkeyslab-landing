@@ -1280,7 +1280,7 @@
         <div class="footer-links">
             <a href="https://wa.link/kzkc0n" target="_blank" rel="noopener noreferrer">WhatsApp</a>
             <a href="https://calendar.app.google/RtZqsytYkhhLRdze7" target="_blank" rel="noopener noreferrer">Agendar Demo</a>
-            <a href="mailto:hola@monkeysapps.online">Email</a>
+            <a href="/cdn-cgi/l/email-protection#462e292a27062b29282d233f35273636356829282a2f2823">Email</a>
         </div>
         <div class="footer-copy">
             © 2026 MONKEYS Lab · Software para laboratorios técnicos
@@ -1305,7 +1305,7 @@
 <!-- ═══════════════════════════════════════
   SCRIPTS
 ═══════════════════════════════════════ -->
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 /* ── SCROLL REVEAL ── */
 const allReveal = document.querySelectorAll('.scroll-reveal, .sr-left, .sr-right');
 const ro = new IntersectionObserver((entries) => {
@@ -1384,15 +1384,16 @@ function mkShowCapture(){
 }
 
 function mkSubmit(){
-    const name = document.getElementById('mkName').value.trim();
-    const phone = document.getElementById('mkPhone').value.trim();
-    const code = document.getElementById('mkCountry').value;
+    const name    = document.getElementById('mkName').value.trim();
+    const phone   = document.getElementById('mkPhone').value.trim();
+    const code    = document.getElementById('mkCountry').value;
     const consent = document.getElementById('mkConsent').checked;
     let ok = true;
-    if(!name){document.getElementById('mkName').classList.add('mk-err');ok=false;}
-    else document.getElementById('mkName').classList.remove('mk-err');
-    if(!phone){document.getElementById('mkPhone').classList.add('mk-err');ok=false;}
-    else document.getElementById('mkPhone').classList.remove('mk-err');
+
+    if(!name)   { document.getElementById('mkName').classList.add('mk-err');  ok=false; }
+    else          document.getElementById('mkName').classList.remove('mk-err');
+    if(!phone)  { document.getElementById('mkPhone').classList.add('mk-err'); ok=false; }
+    else          document.getElementById('mkPhone').classList.remove('mk-err');
     if(!consent){
         document.getElementById('mkConsent').style.outline='2px solid var(--red)';
         document.getElementById('mkConsent').style.outlineOffset='2px';
@@ -1403,11 +1404,36 @@ function mkSubmit(){
     if(!ok) return;
 
     const fullPhone = code + ' ' + phone;
-    const city = document.getElementById('mkCity').value.trim();
+    const city      = document.getElementById('mkCity').value.trim();
 
-    // ── WEBHOOK → Make/Zapier ──
-    // fetch('TU_WEBHOOK_URL', {method:'POST', headers:{'Content-Type':'application/json'},
-    //   body: JSON.stringify({name, phone:fullPhone, city, scores:mkScores, timestamp:new Date().toISOString()})});
+    // ── Calcular total y tier ──
+    const total = Object.values(mkScores).reduce((a,b)=>a+b,0);
+    let tier;
+    if(total >= 10)      tier = 'elite';
+    else if(total >= 5)  tier = 'medio';
+    else                 tier = 'critico';
+
+    // ── WEBHOOK → Make ──
+    fetch('https://hook.us2.make.com/oakeyiaq06v0oxg5kteygqyp4p4vcbj0', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            name:      name,
+            phone:     fullPhone,
+            city:      city,
+            tier:      tier,
+            timestamp: new Date().toISOString(),
+            scores: {
+                total:          total,
+                registro:       mkScores[1] ?? 0,
+                finanzas:       mkScores[2] ?? 0,
+                reclamaciones:  mkScores[3] ?? 0,
+                inventario:     mkScores[4] ?? 0,
+                equipo:         mkScores[5] ?? 0,
+                escalabilidad:  mkScores[6] ?? 0
+            }
+        })
+    }).catch(err => console.warn('Webhook error:', err));
 
     document.getElementById('mkGate').classList.remove('mk-active');
     mkShowResult(name, fullPhone);
@@ -1499,11 +1525,18 @@ function trackEvent(category, action, label) {
 let deepScrolled = false;
 window.addEventListener('scroll', () => {
     if(!deepScrolled && window.scrollY / document.body.scrollHeight > 0.5) {
-        trackEvent('engagement','scroll_50','50% de la página');
         deepScrolled = true;
+        trackEvent('engagement','deep_scroll','50% page');
     }
-}, { passive: true });
-</script>
+});
 
+/* ── CTA CLICK TRACKING ── */
+document.querySelectorAll('a[href*="calendar.app.google"], a[href*="wa.link"]').forEach(a => {
+    a.addEventListener('click', () => {
+        trackEvent('conversion','cta_click', a.href.includes('calendar') ? 'Calendar' : 'WhatsApp');
+    });
+});
+
+</script>
 </body>
 </html>
