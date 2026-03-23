@@ -1323,6 +1323,48 @@ document.querySelectorAll('.faq-q').forEach(q => {
     });
 });
 
+/* ── UTM CAPTURE ── */
+// Captura UTMs de la URL y los guarda en sessionStorage
+// Funciona con tráfico pagado (?utm_source=...) y orgánico (detecta referrer)
+(function(){
+    const p = new URLSearchParams(window.location.search);
+    const utmKeys = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'];
+    const stored = {};
+    utmKeys.forEach(k => {
+        const val = p.get(k);
+        if(val) { sessionStorage.setItem(k, val); stored[k] = val; }
+    });
+    // Si no hay utm_source, detectar canal orgánico por referrer
+    if(!sessionStorage.getItem('utm_source')) {
+        const ref = document.referrer;
+        let src = 'directo';
+        if(ref.includes('instagram.com'))  src = 'instagram';
+        else if(ref.includes('facebook.com') || ref.includes('fb.com')) src = 'facebook';
+        else if(ref.includes('google.com'))  src = 'google_organico';
+        else if(ref.includes('youtube.com')) src = 'youtube';
+        else if(ref.includes('tiktok.com'))  src = 'tiktok';
+        else if(ref.includes('linkedin.com'))src = 'linkedin';
+        else if(ref.includes('t.co') || ref.includes('twitter.com')) src = 'twitter';
+        else if(ref && ref !== '') src = 'referral';
+        sessionStorage.setItem('utm_source', src);
+        if(!sessionStorage.getItem('utm_medium'))
+            sessionStorage.setItem('utm_medium', ref ? 'organico' : 'directo');
+    }
+    // Guardar página de entrada
+    sessionStorage.setItem('landing_page', window.location.pathname + window.location.search);
+})();
+
+function mkGetUTMs(){
+    return {
+        utm_source:   sessionStorage.getItem('utm_source')   || 'directo',
+        utm_medium:   sessionStorage.getItem('utm_medium')   || 'directo',
+        utm_campaign: sessionStorage.getItem('utm_campaign') || '',
+        utm_content:  sessionStorage.getItem('utm_content')  || '',
+        utm_term:     sessionStorage.getItem('utm_term')     || '',
+        landing_page: sessionStorage.getItem('landing_page') || '/',
+    };
+}
+
 /* ── TEST DE DIAGNÓSTICO v2 (mk- prefijo para evitar conflictos) ── */
 const mkScores = {};
 const mkAreas = ['Registro','Finanzas','Reclamaciones','Inventario','Equipo','Escalabilidad'];
@@ -1414,6 +1456,7 @@ function mkSubmit(){
     else                 tier = 'critico';
 
     // ── WEBHOOK → Make ──
+    const utms = mkGetUTMs();
     fetch('https://hook.us2.make.com/oakeyiaq06v0oxg5kteygqyp4p4vcbj0', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1431,7 +1474,13 @@ function mkSubmit(){
                 inventario:     mkScores[4] ?? 0,
                 equipo:         mkScores[5] ?? 0,
                 escalabilidad:  mkScores[6] ?? 0
-            }
+            },
+            utm_source:   utms.utm_source,
+            utm_medium:   utms.utm_medium,
+            utm_campaign: utms.utm_campaign,
+            utm_content:  utms.utm_content,
+            utm_term:     utms.utm_term,
+            landing_page: utms.landing_page
         })
     }).catch(err => console.warn('Webhook error:', err));
 
