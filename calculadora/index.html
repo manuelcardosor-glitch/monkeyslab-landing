@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Rentabilidad Real — MonKeys Lab</title>
+<meta name="description" content="Descubre cuánto ganas de verdad por cada reparación, cómo calcular tus precios correctamente y cuánto estás perdiendo sin saberlo.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════
+   TOKENS
+══════════════════════════════════════════ */
+:root{
+  --ink:#0E0E0E;
+  --paper:#F6F3ED;
+  --green:#1DB954;
+  --green-dark:#158a3e;
+  --green-glow:rgba(29,185,84,.28);
+  --red:#E8311A;
+  --amber:#F59E0B;
+  --muted:#6E6860;
+  --border:rgba(14,14,14,.1);
+  --card:#fff;
+  --wa:#25D366;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);line-height:1.6;font-weight:300;overflow-x:hidden}
+
+/* Grain */
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='.028'/%3E%3C/svg%3E");pointer-events:none;z-index:9999}
+
+.container{max-width:860px;margin:0 auto;padding:0 24px}
+.t-display{font-family:'Bebas Neue',sans-serif;letter-spacing:.01em;line-height:1.0}
+.mono{font-family:'DM Mono',monospace}
+
+/* ══ KEYFRAMES ══ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes countPop{0%{transform:scale(.85);opacity:0}60%{transform:scale(1.04)}100%{transform:scale(1);opacity:1}}
+@keyframes barGrow{from{width:0}to{width:var(--w)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 var(--green-glow)}50%{box-shadow:0 0 0 10px transparent}}
+@keyframes drift{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+/* ══ NAV ══ */
+nav{background:var(--ink);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:-webkit-sticky;position:sticky;top:0;z-index:100;isolation:isolate}
+.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
+.nav-brand-text{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:#fff;letter-spacing:.04em}
+.nav-brand-text span{color:var(--green)}
+.nav-badge{background:rgba(29,185,84,.15);border:1px solid rgba(29,185,84,.3);color:var(--green);font-size:.65rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:4px 12px;border-radius:100px;flex-shrink:0}
+.nav-cta{display:inline-flex;align-items:center;gap:7px;background:var(--green);color:#fff;text-decoration:none;font-size:.8rem;font-weight:700;padding:8px 18px;border-radius:100px;transition:background .2s;letter-spacing:.02em;flex-shrink:0;white-space:nowrap}
+.nav-cta:hover{background:var(--green-dark)}
+
+@media(max-width:480px){
+  nav{padding:12px 16px}
+  .nav-badge{display:none}
+  .nav-brand-text{font-size:.95rem}
+  .nav-cta{font-size:.75rem;padding:7px 14px}
+}
+
+/* ══ HERO ══ */
+.hero{background:var(--ink);padding:72px 24px 64px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(29,185,84,.07) 0%,transparent 65%);pointer-events:none}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(29,185,84,.12);border:1px solid rgba(29,185,84,.25);color:var(--green);font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:6px 16px;border-radius:100px;margin-bottom:24px;animation:fadeUp .6s ease both}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 1.4s infinite;flex-shrink:0}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,7vw,5.5rem);line-height:1.0;letter-spacing:.01em;color:#fff;margin-bottom:18px;animation:fadeUp .6s ease both .1s}
+.hero h1 span{color:var(--green)}
+.hero-sub{font-size:1.05rem;color:rgba(255,255,255,.58);max-width:520px;margin:0 auto 36px;line-height:1.78;animation:fadeUp .6s ease both .2s}
+.hero-sub strong{color:rgba(255,255,255,.85)}
+
+/* Mode selector */
+.mode-selector{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;animation:fadeUp .6s ease both .3s}
+.mode-btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:10px;border:2px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.6);font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .22s;letter-spacing:.01em}
+.mode-btn:hover{border-color:rgba(29,185,84,.4);color:#fff;background:rgba(29,185,84,.06)}
+.mode-btn.active{border-color:var(--green);background:rgba(29,185,84,.12);color:#fff}
+.mode-btn .mode-icon{font-size:1.1rem}
+
+/* ══ CALCULATOR AREA ══ */
+.calc-area{padding:56px 24px 80px}
+
+.calc-module{display:none}
+.calc-module.active{display:block;animation:fadeUp .4s ease both}
+
+/* Section label */
+.section-label{display:inline-flex;align-items:center;gap:8px;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--green);margin-bottom:20px}
+.section-label::before{content:'';width:20px;height:2px;background:var(--green);display:inline-block;flex-shrink:0}
+
+/* ══ INPUTS ══ */
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.calc-grid-3{grid-template-columns:1fr 1fr 1fr}
+@media(max-width:640px){
+  .calc-grid{grid-template-columns:1fr}
+  .calc-grid-3{grid-template-columns:1fr}
+}
+@media(min-width:641px) and (max-width:760px){
+  .calc-grid-3{grid-template-columns:1fr 1fr}
+}
+
+/* Tab bar overflow en móvil */
+.tab-bar{display:flex;gap:4px;background:var(--paper);border-radius:10px;padding:4px;margin-bottom:28px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tab-btn{flex:1;min-width:fit-content;padding:9px 12px;border-radius:7px;border:none;background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;color:var(--muted);transition:all .2s;letter-spacing:.01em;text-align:center;white-space:nowrap}
+.tab-btn.active{background:var(--card);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+
+.field{display:flex;flex-direction:column;gap:6px}
+.field-label{font-size:.74rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink)}
+.field-hint{font-size:.72rem;color:var(--muted);margin-top:-2px;font-style:italic}
+
+.input-wrap{position:relative;display:flex;align-items:center}
+.input-prefix,.input-suffix{position:absolute;font-family:'DM Mono',monospace;font-size:.85rem;font-weight:500;color:var(--muted);pointer-events:none;z-index:1}
+.input-prefix{left:14px}
+.input-suffix{right:14px}
+
+input[type=number],input[type=text],select{
+  width:100%;border:2px solid var(--border);border-radius:10px;
+  padding:12px 16px;font-family:'DM Sans',sans-serif;font-size:.97rem;
+  color:var(--ink);background:var(--card);outline:none;
+  transition:border-color .2s,background .2s;-moz-appearance:textfield;appearance:textfield;
+}
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+input.has-prefix{padding-left:36px}
+input.has-suffix{padding-right:42px}
+input:focus{border-color:var(--green);background:#fff}
+select{cursor:pointer;padding-right:32px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236E6860' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;-webkit-appearance:none;appearance:none}
+
+/* Slider */
+.slider-wrap{display:flex;flex-direction:column;gap:8px}
+.slider-row{display:flex;align-items:center;gap:14px}
+input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:5px;border-radius:100px;background:var(--border);outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--green);box-shadow:0 2px 8px var(--green-glow);cursor:pointer;transition:transform .15s}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.15)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.88rem;font-weight:500;color:var(--ink);min-width:52px;text-align:right}
+
+/* Divider */
+.calc-divider{border:none;border-top:1px solid var(--border);margin:28px 0}
+
+/* Calc btn */
+.btn-calc{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--green);color:#fff;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:700;padding:15px 36px;border-radius:10px;box-shadow:0 6px 24px var(--green-glow);transition:all .22s;width:100%;letter-spacing:.01em;animation:pulse 2.5s infinite}
+.btn-calc:hover{background:var(--green-dark);transform:translateY(-2px)}
+
+/* ══ RESULTS ══ */
+.result-panel{display:none;margin-top:32px}
+.result-panel.show{display:block;animation:fadeUp .5s ease both}
+
+/* Big number */
+.result-hero{background:var(--ink);border-radius:20px;padding:36px 32px;color:#fff;text-align:center;margin-bottom:20px;position:relative;overflow:hidden}
+.result-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 60% 30%,rgba(29,185,84,.1) 0%,transparent 60%);pointer-events:none}
+.result-hero-inner{position:relative;z-index:1}
+.result-hero-label{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:10px}
+.result-big-num{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,8vw,5.5rem);letter-spacing:.02em;line-height:1;animation:countPop .5s cubic-bezier(.16,1,.3,1) both}
+.result-big-unit{font-size:1.2rem;color:rgba(255,255,255,.5);margin-left:4px;font-family:'DM Mono',monospace}
+.result-hero-sub{font-size:.88rem;color:rgba(255,255,255,.45);margin-top:10px;line-height:1.6}
+.result-hero-sub strong{color:rgba(255,255,255,.8)}
+
+/* Result cards row */
+.result-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+@media(max-width:600px){.result-cards{grid-template-columns:1fr 1fr}}
+@media(max-width:380px){.result-cards{grid-template-columns:1fr}}
+
+.result-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 16px;text-align:center}
+.result-card.highlight{background:rgba(29,185,84,.06);border-color:rgba(29,185,84,.25)}
+.result-card.danger{background:rgba(232,49,26,.05);border-color:rgba(232,49,26,.2)}
+.result-card.warning{background:rgba(245,158,11,.06);border-color:rgba(245,158,11,.2)}
+.rc-label{font-size:.66rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.rc-val{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.02em;line-height:1}
+.rc-unit{font-size:.75rem;color:var(--muted);margin-top:3px;font-family:'DM Mono',monospace}
+
+/* Breakdown bar */
+.breakdown-section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 20px;margin-bottom:20px}
+.breakdown-title{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+.bar-item{margin-bottom:14px}
+.bar-item:last-child{margin-bottom:0}
+.bar-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.bar-name{font-size:.84rem;font-weight:500;color:var(--ink)}
+.bar-amount{font-family:'DM Mono',monospace;font-size:.82rem;font-weight:500}
+.bar-track{background:var(--border);border-radius:100px;height:7px;overflow:hidden}
+.bar-fill{height:100%;border-radius:100px;transition:width 1s cubic-bezier(.16,1,.3,1) .3s}
+
+/* Insight box */
+.insight-box{border-radius:14px;padding:20px 22px;display:flex;gap:14px;align-items:flex-start;margin-bottom:20px}
+.insight-box.green{background:rgba(29,185,84,.07);border:1px solid rgba(29,185,84,.2)}
+.insight-box.red{background:rgba(232,49,26,.06);border:1px solid rgba(232,49,26,.18)}
+.insight-box.amber{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2)}
+.insight-icon{font-size:1.6rem;flex-shrink:0;animation:drift 3s ease-in-out infinite}
+.insight-title{font-weight:700;font-size:.9rem;margin-bottom:4px}
+.insight-desc{font-size:.83rem;color:var(--muted);line-height:1.62}
+.insight-desc strong{color:var(--ink)}
+
+/* CTA final */
+.result-cta{background:var(--ink);border-radius:16px;padding:28px 24px;color:#fff;text-align:center}
+.result-cta-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.01em;margin-bottom:8px}
+.result-cta-sub{font-size:.88rem;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:22px;max-width:400px;margin-left:auto;margin-right:auto}
+.result-cta-sub strong{color:#fff}
+.btn-wa-result{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--wa);color:#fff;text-decoration:none;font-weight:700;font-size:.95rem;padding:14px 28px;border-radius:8px;box-shadow:0 6px 24px rgba(37,211,102,.3);transition:all .22s;width:100%;margin-bottom:10px;letter-spacing:.01em}
+.btn-wa-result:hover{background:#1DA851;transform:translateY(-2px)}
+.btn-wa-result svg{width:18px;height:18px;fill:#fff;flex-shrink:0}
+.btn-cal-result{display:inline-flex;align-items:center;justify-content:center;gap:9px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:#fff;text-decoration:none;font-weight:600;font-size:.85rem;padding:12px 22px;border-radius:8px;transition:all .22s;width:100%;letter-spacing:.01em}
+.btn-cal-result:hover{background:rgba(255,255,255,.13);border-color:var(--green)}
+
+/* Reset */
+.btn-reset{background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.76rem;color:var(--muted);text-decoration:underline;text-underline-offset:3px;margin-top:14px;display:block;width:100%;text-align:center}
+
+/* ══ TABS inside calc card ══ */
+.calc-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px 32px;box-shadow:0 4px 40px rgba(0,0,0,.06)}
+@media(max-width:560px){.calc-card{padding:24px 18px;border-radius:16px}}
+
+.tab-content{display:none}
+.tab-content.active{display:block;animation:fadeUp .3s ease both}
+
+/* ══ FOOTER ══ */
+.page-footer{background:var(--ink);padding:28px 24px;text-align:center;font-size:.75rem;color:rgba(255,255,255,.3)}
+.page-footer a{color:rgba(255,255,255,.45);text-decoration:none}
+.page-footer a:hover{color:var(--green)}
+.page-footer strong{color:rgba(255,255,255,.6)}
+
+/* ══ STICKY MOBILE CTA ══ */
+.sticky-demo{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--ink);padding:12px 16px;z-index:200;box-shadow:0 -3px 20px rgba(0,0,0,.3)}
+.sticky-demo a{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--green);color:#fff;text-decoration:none;font-weight:700;font-size:.88rem;padding:13px;border-radius:8px}
+@media(max-width:640px){.sticky-demo{display:block}body{padding-bottom:66px}}
+
+/* ══ UTILS ══ */
+.text-green{color:var(--green)}
+.text-red{color:var(--red)}
+.text-amber{color:var(--amber)}
+.mb-4{margin-bottom:4px}
+.mb-8{margin-bottom:8px}
+.mb-16{margin-bottom:16px}
+.mb-24{margin-bottom:24px}
+
+/* ══ MOBILE GLOBAL ══ */
+@media(max-width:640px){
+  .calc-area{padding:32px 16px 60px}
+  .hero{padding:48px 20px 44px}
+  .hero h1{font-size:clamp(2.2rem,10vw,3rem)}
+  .hero-sub{font-size:.92rem}
+  .mode-btn{padding:10px 14px;font-size:.82rem}
+  .result-cards{grid-template-columns:1fr 1fr}
+  .result-hero{padding:24px 20px}
+  .result-big-num{font-size:clamp(2.2rem,12vw,3.5rem)}
+  /* Campos dinámicos: asegura que el grid colapse en todos los sub-bloques */
+  #r-fields-lab .calc-grid,
+  #r-fields-apple .calc-grid,
+  #r-fields-repuestos .calc-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-brand" href="index.html">
+    <span class="nav-brand-text">MONKEYS<span>.LAB</span></span>
+  </a>
+  <span class="nav-badge">Herramienta gratuita</span>
+  <a class="nav-cta" href="https://calendar.app.google/RtZqsytYkhhLRdze7" target="_blank" rel="noopener noreferrer">Demo gratis →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow"><span class="live-dot"></span>Calculadora exclusiva · MonKeys Lab</div>
+  <h1 class="t-display">Calculadora de<br><span>Rentabilidad Real</span></h1>
+  <p class="hero-sub">
+    Descubre exactamente <strong>cuánto ganas (o pierdes)</strong> por cada servicio,
+    cómo calcular tus precios para no trabajar gratis — y cuánto te cuesta el desorden.
+  </p>
+
+  <div class="mode-selector">
+    <button class="mode-btn active" onclick="setMode('reparacion',this)">
+      <span class="mode-icon">🔧</span> Reparación / Servicio
+    </button>
+    <button class="mode-btn" onclick="setMode('precio',this)">
+      <span class="mode-icon">🏷️</span> Calcular precio justo
+    </button>
+    <button class="mode-btn" onclick="setMode('perdida',this)">
+      <span class="mode-icon">💸</span> ¿Cuánto estoy perdiendo?
+    </button>
+  </div>
+</section>
+
+<!-- CALCULATOR -->
+<div class="calc-area">
+  <div class="container">
+
+    <!-- ══════════════════════════
+         MÓDULO 1: RENTABILIDAD POR REPARACIÓN
+    ══════════════════════════ -->
+    <div class="calc-module active" id="mod-reparacion">
+      <div class="calc-card">
+        <span class="section-label">Módulo 1 · Rentabilidad real por servicio</span>
+        <h2 class="t-display mb-8" style="font-size:clamp(1.6rem,3.5vw,2.4rem)">¿Cuánto ganas de verdad<br>por cada reparación?</h2>
+        <p style="font-size:.88rem;color:var(--muted);margin-bottom:28px;line-height:1.7">
+          Ingresa los datos reales de un servicio típico. La calculadora te muestra tu ganancia real, tu margen, y si tu precio actual tiene sentido.
+        </p>
+
+        <!-- Tipo de negocio -->
+        <div class="field mb-16">
+          <label class="field-label">Tipo de negocio</label>
+          <select id="r-tipo" onchange="updateTipoNegocio()">
+            <option value="lab">🔧 Laboratorio técnico / Reparaciones</option>
+            <option value="apple">🍎 Tienda Apple</option>
+            <option value="repuestos">🔩 Tienda de repuestos / Accesorios</option>
+          </select>
+        </div>
+
+        <!-- Subtipo Apple (solo visible cuando apple está seleccionado) -->
+        <div class="field mb-16" id="r-subtipo-wrap" style="display:none">
+          <label class="field-label">¿Qué tipo de transacción calculas?</label>
+          <select id="r-subtipo-apple" onchange="calcReparacion()">
+            <option value="nuevo">📦 Venta equipo nuevo</option>
+            <option value="seminuevo">♻️ Venta equipo seminuevo</option>
+            <option value="retoma">🔁 Retoma (compra + reventa)</option>
+          </select>
+        </div>
+
+        <hr class="calc-divider">
+        <p class="section-label" style="font-size:.65rem">Ingresos</p>
+
+        <div class="calc-grid mb-16">
+          <div class="field">
+            <label class="field-label" id="r-precio-label">Precio cobrado al cliente</label>
+            <span class="field-hint" id="r-precio-hint">Lo que recibes tú</span>
+            <div class="input-wrap">
+              <span class="input-prefix">$</span>
+              <input class="has-prefix" type="number" id="r-precio" placeholder="80.000" min="0" oninput="calcReparacion()">
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label" id="r-cantidad-label">Servicios así por mes</label>
+            <span class="field-hint">Promedio mensual</span>
+            <div class="input-wrap">
+              <input type="number" id="r-cantidad" placeholder="20" min="1" oninput="calcReparacion()">
+            </div>
+          </div>
+          <!-- Campo extra Apple retoma: precio de compra del equipo -->
+          <div class="field" id="r-retoma-compra-wrap" style="display:none">
+            <label class="field-label">Precio de compra (retoma)</label>
+            <span class="field-hint">Lo que le pagas al cliente por su equipo</span>
+            <div class="input-wrap">
+              <span class="input-prefix">$</span>
+              <input class="has-prefix" type="number" id="r-retoma-compra" placeholder="600.000" min="0" oninput="calcReparacion()">
+            </div>
+          </div>
+        </div>
+
+        <hr class="calc-divider">
+        <p class="section-label" style="font-size:.65rem">Costos directos</p>
+
+        <!-- CAMPOS LABORATORIO (lab) -->
+        <div id="r-fields-lab">
+          <div class="calc-grid mb-16">
+            <div class="field">
+              <label class="field-label">Costo del repuesto</label>
+              <span class="field-hint">Material directo usado</span>
+              <div class="input-wrap">
+                <span class="input-prefix">$</span>
+                <input class="has-prefix" type="number" id="r-repuesto-lab" placeholder="30.000" min="0" oninput="calcReparacion()">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Tiempo de mano de obra</label>
+              <span class="field-hint">Minutos que toma la reparación</span>
+              <div class="input-wrap">
+                <input type="number" id="r-tiempo-lab" placeholder="45" min="0" oninput="calcReparacion()">
+                <span class="input-suffix">min</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Valor técnico</label>
+              <span class="field-hint">Sueldo/hora · Porcentaje de quien lo hace</span>
+              <div class="input-wrap">
+                <span class="input-prefix">$</span>
+                <input class="has-prefix" type="number" id="r-hora-lab" placeholder="12.500" min="0" oninput="calcReparacion()">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Garantía / reprocesos</label>
+              <span class="field-hint">% de reparaciones que hay que rehacer</span>
+              <div class="input-wrap">
+                <input type="number" id="r-garantia-lab" placeholder="5" min="0" max="50" oninput="calcReparacion()">
+                <span class="input-suffix">%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CAMPOS TIENDA APPLE -->
+        <div id="r-fields-apple" style="display:none">
+          <div class="calc-grid mb-16">
+            <div class="field">
+              <label class="field-label">Costo del equipo / parte</label>
+              <span class="field-hint">Precio de compra al proveedor o distribuidor</span>
+              <div class="input-wrap">
+                <span class="input-prefix">$</span>
+                <input class="has-prefix" type="number" id="r-costo-apple" placeholder="1.200.000" min="0" oninput="calcReparacion()">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Flete / importación</label>
+              <span class="field-hint">Costo de traer el equipo por unidad</span>
+              <div class="input-wrap">
+                <span class="input-prefix">$</span>
+                <input class="has-prefix" type="number" id="r-flete-apple" placeholder="25.000" min="0" oninput="calcReparacion()">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Comisión del vendedor</label>
+              <span class="field-hint">% de la venta que recibe quien vende</span>
+              <div class="input-wrap">
+                <input type="number" id="r-comision-apple" placeholder="3" min="0" max="30" oninput="calcReparacion()">
+                <span class="input-suffix">%</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Garantía / devoluciones</label>
+              <span class="field-hint">% de ventas que generan devolución</span>
+              <div class="input-wrap">
+                <input type="number" id="r-garantia-apple" placeholder="2" min="0" max="20" oninput="calcReparacion()">
+                <span class="input-suffix">%</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Costo de preparación</label>
+              <span class="field-hint">Limpieza, formateo, embalaje del equipo</span>
+              <div class="input-wrap">
+                <span class="input-prefix">$</span>
+                <input class="has-prefix" type="number" id="r-prep-apple" placeholder="15.000" min="0" oninput="calcReparacion()">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Días en inventario</label>
+              <span class="field-hint">Promedio de días hasta venderlo</span>
+              <div class="input-wrap">
+                <input type="number" id="r-dias-apple" placeholder="12" min="1" oninput="calcReparacion()">
+                <span class="input-suffix">días</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CAMPOS REPUESTOS / ACCESORIOS -->
+        <div id="r-fields-repuestos" style="display:none">
+          <div class="calc-grid mb-16">
+            <div class="field">
+              <label class="field-label">Costo de compra</label>
+              <span class="field-hint">Precio que pagas al proveedor</span>
+              <div class="input-wrap">
+                <span class="input-prefix">$</span>
+                <input class="has-prefix" type="number" id="r-costo-rep" placeholder="18.000" min="0" oninput="calcReparacion()">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Flete / importación</label>
+              <span class="field-hint">Costo de traer el producto por unidad</span>
+              <div class="input-wrap">
+                <span class="input-prefix">$</span>
+                <input class="has-prefix" type="number" id="r-flete-rep" placeholder="2.000" min="0" oninput="calcReparacion()">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Merma / productos dañados</label>
+              <span class="field-hint">% de unidades que no se pueden vender</span>
+              <div class="input-wrap">
+                <input type="number" id="r-merma-rep" placeholder="3" min="0" max="30" oninput="calcReparacion()">
+                <span class="input-suffix">%</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Comisión del vendedor</label>
+              <span class="field-hint">% sobre el precio de venta</span>
+              <div class="input-wrap">
+                <input type="number" id="r-comision-rep" placeholder="4" min="0" max="30" oninput="calcReparacion()">
+                <span class="input-suffix">%</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Devoluciones / garantías</label>
+              <span class="field-hint">% de ventas que regresan</span>
+              <div class="input-wrap">
+                <input type="number" id="r-devol-rep" placeholder="2" min="0" max="20" oninput="calcReparacion()">
+                <span class="input-suffix">%</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Días promedio en inventario</label>
+              <span class="field-hint">¿Cuánto tarda en venderse?</span>
+              <div class="input-wrap">
+                <input type="number" id="r-dias-rep" placeholder="20" min="1" oninput="calcReparacion()">
+                <span class="input-suffix">días</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="calc-divider">
+        <p class="section-label" style="font-size:.65rem">Costos indirectos (prorrateo)</p>
+
+        <div class="calc-grid mb-24">
+          <div class="field">
+            <label class="field-label">Arriendo mensual del local</label>
+            <span class="field-hint">0 si es en casa</span>
+            <div class="input-wrap">
+              <span class="input-prefix">$</span>
+              <input class="has-prefix" type="number" id="r-arriendo" placeholder="800.000" min="0" oninput="calcReparacion()">
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Servicios + internet al mes</label>
+            <span class="field-hint">Luz, agua, internet, etc.</span>
+            <div class="input-wrap">
+              <span class="input-prefix">$</span>
+              <input class="has-prefix" type="number" id="r-servicios" placeholder="150.000" min="0" oninput="calcReparacion()">
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label" id="r-total-label">Total transacciones al mes</label>
+            <span class="field-hint">Para dividir el costo fijo</span>
+            <div class="input-wrap">
+              <input type="number" id="r-total-servicios" placeholder="60" min="1" oninput="calcReparacion()">
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-calc" onclick="calcReparacion(true)">
+          Calcular mi rentabilidad real →
+        </button>
+
+        <!-- RESULT -->
+        <div class="result-panel" id="res-reparacion">
+
+          <div class="result-hero">
+            <div class="result-hero-inner">
+              <div class="result-hero-label">Ganancia real por servicio</div>
+              <div class="result-big-num text-green" id="r-ganancia-real">$0</div>
+              <div class="result-hero-sub">de <strong id="r-precio-cobrado">$0</strong> cobrados · margen real: <strong id="r-margen">0%</strong></div>
+            </div>
+          </div>
+
+          <div class="result-cards">
+            <div class="result-card">
+              <div class="rc-label">Costo total</div>
+              <div class="rc-val" id="r-costo-total">$0</div>
+              <div class="rc-unit">por servicio</div>
+            </div>
+            <div class="result-card highlight">
+              <div class="rc-label">Ingreso mensual</div>
+              <div class="rc-val text-green" id="r-ingreso-mes">$0</div>
+              <div class="rc-unit">por este servicio</div>
+            </div>
+            <div class="result-card">
+              <div class="rc-label">Costo mano obra</div>
+              <div class="rc-val" id="r-costo-mo">$0</div>
+              <div class="rc-unit">por servicio</div>
+            </div>
+          </div>
+
+          <div class="breakdown-section">
+            <div class="breakdown-title">¿A dónde va tu plata por cada servicio?</div>
+            <div id="r-breakdown-bars"></div>
+          </div>
+
+          <div id="r-insight-box"></div>
+
+          <div class="result-cta">
+            <div class="result-cta-title t-display">¿Quieres que esto sea automático?</div>
+            <p class="result-cta-sub">MonKeys Lab te muestra esta rentabilidad <strong>en tiempo real</strong> para cada servicio, sin hacer cuentas a mano.</p>
+            <a class="btn-wa-result" href="https://wa.link/kzkc0n" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.117 1.528 5.845L.053 23.338a.75.75 0 0 0 .933.933l5.493-1.475A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.706 9.706 0 0 1-4.95-1.355l-.355-.212-3.683.988.988-3.607-.231-.373A9.694 9.694 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+              Quiero ver el sistema en vivo
+            </a>
+            <a class="btn-cal-result" href="https://calendar.app.google/RtZqsytYkhhLRdze7" target="_blank" rel="noopener noreferrer">📅 Agendar demo gratis →</a>
+          </div>
+
+          <button class="btn-reset" onclick="resetModule('reparacion')">← Recalcular con otros datos</button>
+        </div><!-- /result -->
+      </div><!-- /calc-card -->
+    </div><!-- /mod-reparacion -->
+
+
+    <!-- ══════════════════════════
+         MÓDULO 2: CALCULAR PRECIO JUSTO
+    ══════════════════════════ -->
+    <div class="calc-module" id="mod-precio">
+      <div class="calc-card">
+        <span class="section-label">Módulo 2 · Calculadora de precio justo</span>
+        <h2 class="t-display mb-8" style="font-size:clamp(1.6rem,3.5vw,2.4rem)">¿Cuánto deberías cobrar<br>para no trabajar gratis?</h2>
+        <p style="font-size:.88rem;color:var(--muted);margin-bottom:28px;line-height:1.7">
+          Ingresa tus costos y la ganancia que quieres tener. La calculadora te dice el precio mínimo que debes cobrar — y el precio recomendado para tener margen real.
+        </p>
+
+        <!-- Tabs: servicio / producto -->
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="setTab('p-serv',this)">🔧 Servicio / Reparación</button>
+          <button class="tab-btn" onclick="setTab('p-prod',this)">📦 Producto / Repuesto</button>
+          <button class="tab-btn" onclick="setTab('p-acc',this)">🎧 Accesorio</button>
+        </div>
+
+        <!-- TAB: SERVICIO -->
+        <div class="tab-content active" id="p-serv">
+          <div class="calc-grid mb-16">
+            <div class="field">
+              <label class="field-label">Costo del repuesto</label>
+              <span class="field-hint">Material directo usado</span>
+              <div class="input-wrap">
+                <span class="input-prefix">$</span>
+                <input class="has-prefix" type="number" id="ps-repuesto" placeholder="25.000" min="0" oninput="calcPrecio('serv')">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Tiempo del servicio</label>
+              <span class="field-hint">Minutos reales</span>
+              <div class="input-wrap">
+                <input type="number" id="ps-tiempo" placeholder="60" min="0" oninput="calcPrecio('serv')">
+                <span class="input-suffix">min</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Costo hora técnico</label>
+              <span class="field-hint">Sueldo hora de quien trabaja</span>
+              <div class="input-wrap">
+                <span class="input-prefix">$</span>
+                <input class="has-prefix" type="number" id="ps-hora" placeholder="12.500" min="0" oninput="calcPrecio('serv')">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Gastos fijos / servicio</label>
+              <span class="field-hint">Arriendo + servicios ÷ servicios mes</span>
+              <div class="input-wrap">
+                <span class="input-prefix">$</span>
+                <input class="has-prefix" type="number" id="ps-fijos" placeholder="15.000" min="0" oninput="calcPrecio('serv')">
+              </div>
+            </div>
+          </div>
+          <div class="field mb-24">
+            <label class="field-label">Ganancia que quiero tener</label>
+            <div class="slider-wrap">
+              <div class="slider-row">
+                <input type="range" id="ps-margen" min="10" max="80" value="35" oninput="document.getElementById('ps-margen-val').textContent=this.value+'%';calcPrecio('serv')">
+                <span class="slider-val" id="ps-margen-val">35%</span>
+              </div>
+            </div>
+          </div>
+          <button class="btn-calc" onclick="calcPrecio('serv',true)">Calcular mi precio justo →</button>
+          <div class="result-panel" id="res-precio-serv"></div>
+          <button class="btn-reset" style="display:none" id="reset-precio-serv" onclick="resetPrecio('serv')">← Recalcular</button>
+        </div>
+
+        <!-- TAB: PRODUCTO/REPUESTO -->
+        <div class="tab-content" id="p-prod">
+          <div class="calc-grid mb-16">
+            <div class="field">
+              <label class="field-label">Precio de compra (costo)</label>
+              <span class="field-hint">Lo que pagas tú al proveedor</span>
+              <div class="input-wrap">
+                <span class="input-prefix">$</span>
+                <input class="has-prefix" type="number" id="pp-costo" placeholder="45.000" min="0" oninput="calcPrecio('prod')">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Flete / importación</label>
+              <span class="field-hint">Costo de envío por unidad</span>
+              <div class="input-wrap">
+                <span class="input-prefix">$</span>
+                <input class="has-prefix" type="number" id="pp-flete" placeholder="3.000" min="0" oninput="calcPrecio('prod')">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Tiempo de venta estimado</label>
+              <span class="field-hint">¿Cuántos días hasta venderlo?</span>
+              <div class="input-wrap">
+                <input type="number" id="pp-dias" placeholder="15" min="1" oninput="calcPrecio('prod')">
+                <span class="input-suffix">días</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">% merma / garantía</label>
+              <span class="field-hint">Unidades que se pierden o devuelven</span>
+              <div class="input-wrap">
+                <input type="number" id="pp-merma" placeholder="3" min="0" max="30" oninput="calcPrecio('prod')">
+                <span class="input-suffix">%</span>
+              </div>
+            </div>
+          </div>
+          <div class="field mb-24">
+            <label class="field-label">Margen de ganancia objetivo</label>
+            <div class="slider-wrap">
+              <div class="slider-row">
+                <input type="range" id="pp-margen" min="10" max="150" value="40" oninput="document.getElementById('pp-margen-val').textContent=this.value+'%';calcPrecio('prod')">
+                <span class="slider-val" id="pp-margen-val">40%</span>
+              </div>
+            </div>
+          </div>
+          <button class="btn-calc" onclick="calcPrecio('prod',true)">Calcular precio de venta →</button>
+          <div class="result-panel" id="res-precio-prod"></div>
+          <button class="btn-reset" style="display:none" id="reset-precio-prod" onclick="resetPrecio('prod')">← Recalcular</button>
+        </div>
+
+        <!-- TAB: ACCESORIO -->
+        <div class="tab-content" id="p-acc">
+          <div class="calc-grid mb-16">
+            <div class="field">
+              <label class="field-label">Costo de compra</label>
+              <span class="field-hint">Precio que pagas al proveedor</span>
+              <div class="input-wrap">
+                <span class="input-prefix">$</span>
+                <input class="has-prefix" type="number" id="pa-costo" placeholder="12.000" min="0" oninput="calcPrecio('acc')">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Gastos de traer (flete)</label>
+              <span class="field-hint">Por unidad</span>
+              <div class="input-wrap">
+                <span class="input-prefix">$</span>
+                <input class="has-prefix" type="number" id="pa-flete" placeholder="1.500" min="0" oninput="calcPrecio('acc')">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">¿Cuántos vendes por mes?</label>
+              <span class="field-hint">Promedio mensual de este ítem</span>
+              <div class="input-wrap">
+                <input type="number" id="pa-unidades" placeholder="30" min="1" oninput="calcPrecio('acc')">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Gastos fijos del mes</label>
+              <span class="field-hint">Arriendo + servicios del local</span>
+              <div class="input-wrap">
+                <span class="input-prefix">$</span>
+                <input class="has-prefix" type="number" id="pa-fijos-mes" placeholder="1.200.000" min="0" oninput="calcPrecio('acc')">
+              </div>
+            </div>
+          </div>
+          <div class="field mb-24">
+            <label class="field-label">Margen de ganancia que quiero</label>
+            <div class="slider-wrap">
+              <div class="slider-row">
+                <input type="range" id="pa-margen" min="10" max="200" value="60" oninput="document.getElementById('pa-margen-val').textContent=this.value+'%';calcPrecio('acc')">
+                <span class="slider-val" id="pa-margen-val">60%</span>
+              </div>
+            </div>
+          </div>
+          <button class="btn-calc" onclick="calcPrecio('acc',true)">Calcular precio de venta →</button>
+          <div class="result-panel" id="res-precio-acc"></div>
+          <button class="btn-reset" style="display:none" id="reset-precio-acc" onclick="resetPrecio('acc')">← Recalcular</button>
+        </div>
+
+      </div><!-- /calc-card -->
+    </div><!-- /mod-precio -->
+
+
+    <!-- ══════════════════════════
+         MÓDULO 3: PÉRDIDA POR DESORDEN
+    ══════════════════════════ -->
+    <div class="calc-module" id="mod-perdida">
+      <div class="calc-card">
+        <span class="section-label">Módulo 3 · El costo real del desorden</span>
+        <h2 class="t-display mb-8" style="font-size:clamp(1.6rem,3.5vw,2.4rem)">¿Cuánto te cuesta operar<br>sin el sistema correcto?</h2>
+        <p style="font-size:.88rem;color:var(--muted);margin-bottom:28px;line-height:1.7">
+          Responde con honestidad. La calculadora suma todo lo que pierdes por reclamaciones, tiempo, desorden y errores — y te muestra el número real.
+        </p>
+
+        <hr class="calc-divider">
+        <p class="section-label" style="font-size:.65rem">Reclamaciones</p>
+
+        <div class="calc-grid mb-16">
+          <div class="field">
+            <label class="field-label">Reclamaciones injustas por mes</label>
+            <span class="field-hint">Donde el cliente no tenía razón</span>
+            <div class="input-wrap">
+              <input type="number" id="p-reclamos" placeholder="3" min="0" oninput="calcPerdida()">
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Monto promedio que cedes</label>
+            <span class="field-hint">Descuento o reposición por reclamo</span>
+            <div class="input-wrap">
+              <span class="input-prefix">$</span>
+              <input class="has-prefix" type="number" id="p-monto-reclamo" placeholder="80.000" min="0" oninput="calcPerdida()">
+            </div>
+          </div>
+        </div>
+
+        <hr class="calc-divider">
+        <p class="section-label" style="font-size:.65rem">Tiempo perdido</p>
+
+        <div class="calc-grid mb-16">
+          <div class="field">
+            <label class="field-label">Tiempo buscando info por cliente</label>
+            <span class="field-hint">Min. promedio buscando en cuadernos</span>
+            <div class="input-wrap">
+              <input type="number" id="p-tiempo-busqueda" placeholder="8" min="0" oninput="calcPerdida()">
+              <span class="input-suffix">min</span>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Clientes que preguntan por estado</label>
+            <span class="field-hint">Llamadas o mensajes al día</span>
+            <div class="input-wrap">
+              <input type="number" id="p-llamadas" placeholder="6" min="0" oninput="calcPerdida()">
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Tu valor hora como dueño</label>
+            <span class="field-hint">¿Cuánto vale tu hora de trabajo?</span>
+            <div class="input-wrap">
+              <span class="input-prefix">$</span>
+              <input class="has-prefix" type="number" id="p-valor-hora" placeholder="25.000" min="0" oninput="calcPerdida()">
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Reparaciones paradas por falta stock</label>
+            <span class="field-hint">Veces al mes que para por repuesto</span>
+            <div class="input-wrap">
+              <input type="number" id="p-paradas" placeholder="4" min="0" oninput="calcPerdida()">
+            </div>
+          </div>
+        </div>
+
+        <hr class="calc-divider">
+        <p class="section-label" style="font-size:.65rem">Errores y reprocesos</p>
+
+        <div class="calc-grid mb-24">
+          <div class="field">
+            <label class="field-label">Servicios que toca rehacer / mes</label>
+            <span class="field-hint">Por error técnico o malentendido</span>
+            <div class="input-wrap">
+              <input type="number" id="p-reprocesos" placeholder="2" min="0" oninput="calcPerdida()">
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Costo promedio de rehacer</label>
+            <span class="field-hint">Repuesto + tiempo del reproceso</span>
+            <div class="input-wrap">
+              <span class="input-prefix">$</span>
+              <input class="has-prefix" type="number" id="p-costo-reproceso" placeholder="45.000" min="0" oninput="calcPerdida()">
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-calc" onclick="calcPerdida(true)">Calcular cuánto estoy perdiendo →</button>
+
+        <!-- RESULT -->
+        <div class="result-panel" id="res-perdida">
+
+          <div class="result-hero" style="border:2px solid rgba(232,49,26,.3)">
+            <div class="result-hero-inner">
+              <div class="result-hero-label">Pierdes cada mes por el desorden</div>
+              <div class="result-big-num text-red" id="p-total-perdida">$0</div>
+              <div class="result-hero-sub">Al año: <strong id="p-perdida-anual">$0</strong></div>
+            </div>
+          </div>
+
+          <div class="result-cards">
+            <div class="result-card danger">
+              <div class="rc-label">Por reclamaciones</div>
+              <div class="rc-val text-red" id="p-r-reclamos">$0</div>
+              <div class="rc-unit">/ mes</div>
+            </div>
+            <div class="result-card warning">
+              <div class="rc-label">Por tiempo perdido</div>
+              <div class="rc-val text-amber" id="p-r-tiempo">$0</div>
+              <div class="rc-unit">/ mes</div>
+            </div>
+            <div class="result-card danger">
+              <div class="rc-label">Por reprocesos</div>
+              <div class="rc-val text-red" id="p-r-reprocesos">$0</div>
+              <div class="rc-unit">/ mes</div>
+            </div>
+          </div>
+
+          <div class="breakdown-section">
+            <div class="breakdown-title">Desglose del costo del desorden</div>
+            <div id="p-breakdown-bars"></div>
+          </div>
+
+          <div id="p-insight-box"></div>
+
+          <div class="result-cta">
+            <div class="result-cta-title t-display">Este dinero puede quedarse en tu bolsillo</div>
+            <p class="result-cta-sub">MonKeys Lab elimina prácticamente todas estas pérdidas. <strong>Implementación en 48 horas.</strong></p>
+            <a class="btn-wa-result" href="https://wa.link/kzkc0n" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.117 1.528 5.845L.053 23.338a.75.75 0 0 0 .933.933l5.493-1.475A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.706 9.706 0 0 1-4.95-1.355l-.355-.212-3.683.988.988-3.607-.231-.373A9.694 9.694 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+              Quiero recuperar esta plata
+            </a>
+            <a class="btn-cal-result" href="https://calendar.app.google/RtZqsytYkhhLRdze7" target="_blank" rel="noopener noreferrer">📅 Ver demo del sistema →</a>
+          </div>
+
+          <button class="btn-reset" onclick="resetModule('perdida')">← Recalcular con otros datos</button>
+        </div>
+
+      </div><!-- /calc-card -->
+    </div><!-- /mod-perdida -->
+
+  </div><!-- /container -->
+</div><!-- /calc-area -->
+
+<!-- FOOTER -->
+<footer class="page-footer">
+  <strong>MONKEYS.LAB</strong> · Calculadora de Rentabilidad Real · Herramienta gratuita<br>
+  <a href="https://calendar.app.google/RtZqsytYkhhLRdze7" target="_blank">Agendar demo</a> &nbsp;·&nbsp;
+  <a href="https://wa.link/kzkc0n" target="_blank">WhatsApp</a> &nbsp;·&nbsp;
+  <a href="index.html">Volver al inicio</a>
+</footer>
+
+<!-- STICKY MOBILE -->
+<div class="sticky-demo">
+  <a href="https://calendar.app.google/RtZqsytYkhhLRdze7" target="_blank" rel="noopener noreferrer">📅 Agendar demo gratis →</a>
+</div>
+
+<script>
+/* ══════════════════════════════════════════
+   UTILS
+══════════════════════════════════════════ */
+const fmt = n => {
+  if(isNaN(n)||n===null) return '$0';
+  return '$' + Math.round(n).toLocaleString('es-CO');
+};
+const fmtPct = n => Math.round(n) + '%';
+const v = id => parseFloat(document.getElementById(id)?.value)||0;
+
+/* ══════════════════════════════════════════
+   MODE SELECTOR
+══════════════════════════════════════════ */
+function setMode(mod, btn){
+  document.querySelectorAll('.calc-module').forEach(m=>m.classList.remove('active'));
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('mod-'+mod).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({top: document.querySelector('.calc-area').offsetTop - 60, behavior:'smooth'});
+}
+
+/* ══════════════════════════════════════════
+   TAB SELECTOR (módulo precio)
+══════════════════════════════════════════ */
+function setTab(tabId, btn){
+  const card = btn.closest('.calc-card');
+  card.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  card.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ══════════════════════════════════════════
+   BAR BUILDER
+══════════════════════════════════════════ */
+function buildBars(container, items, total){
+  // items = [{label, val, color}]
+  if(!total) total = items.reduce((a,b)=>a+b.val,0);
+  container.innerHTML = items.map(item=>{
+    const pct = total>0 ? Math.min(100,(item.val/total)*100) : 0;
+    return `<div class="bar-item">
+      <div class="bar-row">
+        <span class="bar-name">${item.label}</span>
+        <span class="bar-amount" style="color:${item.color}">${fmt(item.val)}</span>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${pct.toFixed(1)}%;background:${item.color}"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function buildInsight(container, msg, type='green'){
+  const icons={green:'✅',amber:'⚠️',red:'🚨'};
+  container.innerHTML=`<div class="insight-box ${type}">
+    <span class="insight-icon">${icons[type]}</span>
+    <div>${msg}</div>
+  </div>`;
+}
+
+/* ══════════════════════════════════════════
+   MÓDULO 1: RENTABILIDAD — LÓGICA DINÁMICA POR TIPO
+══════════════════════════════════════════ */
+
+function updateTipoNegocio(){
+  const tipo = document.getElementById('r-tipo').value;
+
+  // Mostrar/ocultar subtipo Apple
+  document.getElementById('r-subtipo-wrap').style.display = tipo==='apple' ? '' : 'none';
+
+  // Mostrar/ocultar los bloques de campos directos
+  document.getElementById('r-fields-lab').style.display      = tipo==='lab'      ? '' : 'none';
+  document.getElementById('r-fields-apple').style.display    = tipo==='apple'    ? '' : 'none';
+  document.getElementById('r-fields-repuestos').style.display= tipo==='repuestos'? '' : 'none';
+
+  // Adaptar labels de ingresos
+  const precios = {
+    lab:      {precio:'Precio cobrado al cliente', hint:'Lo que cobra la reparación', cantidad:'Reparaciones así por mes', total:'Total reparaciones al mes'},
+    apple:    {precio:'Precio de venta al cliente', hint:'Precio final del equipo', cantidad:'Equipos vendidos así por mes', total:'Total equipos vendidos al mes'},
+    repuestos:{precio:'Precio de venta', hint:'Precio que le cobras al cliente', cantidad:'Unidades vendidas por mes', total:'Total unidades vendidas al mes'},
+  };
+  const p = precios[tipo];
+  document.getElementById('r-precio-label').textContent  = p.precio;
+  document.getElementById('r-precio-hint').textContent   = p.hint;
+  document.getElementById('r-cantidad-label').textContent = p.cantidad;
+  document.getElementById('r-total-label').textContent   = p.total;
+
+  // Retoma: mostrar campo precio de compra
+  updateRetomaField();
+  calcReparacion();
+}
+
+function updateRetomaField(){
+  const tipo    = document.getElementById('r-tipo').value;
+  const subtipo = document.getElementById('r-subtipo-apple')?.value;
+  const show    = tipo==='apple' && subtipo==='retoma';
+  document.getElementById('r-retoma-compra-wrap').style.display = show ? '' : 'none';
+}
+
+document.getElementById('r-subtipo-apple').addEventListener('change', function(){
+  updateRetomaField();
+  calcReparacion();
+});
+
+function calcReparacion(show=false){
+  const tipo    = document.getElementById('r-tipo').value;
+  const precio  = v('r-precio');
+  const cantidad= v('r-cantidad') || 1;
+  const arriendo= v('r-arriendo');
+  const svcs    = v('r-servicios');
+  const totalSvcs = v('r-total-servicios') || 1;
+  const costoIndirecto = (arriendo + svcs) / totalSvcs;
+
+  let costoDirecto = 0;
+  let barItems = [];
+  let labelCosto = 'Costo directo';
+
+  if(tipo === 'lab'){
+    const repuesto   = v('r-repuesto-lab');
+    const tiempo     = v('r-tiempo-lab');
+    const hora       = v('r-hora-lab');
+    const garantiaPct= v('r-garantia-lab');
+    const costoMO    = (tiempo / 60) * hora;
+    const costoGarantia = precio * (garantiaPct / 100);
+    costoDirecto = repuesto + costoMO + costoGarantia;
+    labelCosto = 'Costo mano de obra';
+    barItems = [
+      {label:'Repuesto / material', val:repuesto,      color:'#E8311A'},
+      {label:'Mano de obra',        val:costoMO,       color:'#F59E0B'},
+      {label:'Garantías / reprocesos', val:costoGarantia, color:'#7B2FBE'},
+      {label:'Gastos fijos',        val:costoIndirecto, color:'#6E6860'},
+      {label:'Tu ganancia',         val:0, color:'#1DB954'}, // se actualiza abajo
+    ];
+    if(show) document.getElementById('r-costo-mo').textContent = fmt(costoMO);
+
+  } else if(tipo === 'apple'){
+    const subtipo  = document.getElementById('r-subtipo-apple').value;
+    const costoEquipo = v('r-costo-apple');
+    const flete       = v('r-flete-apple');
+    const comisionPct = v('r-comision-apple');
+    const garantiaPct = v('r-garantia-apple');
+    const prep        = v('r-prep-apple');
+    const diasInv     = v('r-dias-apple') || 1;
+    const retomaCompra= v('r-retoma-compra');
+
+    const costoComision  = precio * (comisionPct / 100);
+    const costoGarantia  = precio * (garantiaPct / 100);
+    // Costo capital: dinero inmovilizado en inventario (tasa referencia ~2% mensual ÷ 30 * días)
+    const costoCapital   = (costoEquipo + flete) * 0.02 / 30 * diasInv;
+
+    if(subtipo === 'retoma'){
+      costoDirecto = retomaCompra + prep + costoComision + costoGarantia + costoCapital + flete;
+      barItems = [
+        {label:'Compra del equipo (retoma)', val:retomaCompra,   color:'#E8311A'},
+        {label:'Preparación / limpieza',     val:prep,            color:'#F59E0B'},
+        {label:'Comisión vendedor',          val:costoComision,   color:'#7B2FBE'},
+        {label:'Garantías / devoluciones',   val:costoGarantia,   color:'#E8311A'},
+        {label:'Costo capital (días inv.)',  val:costoCapital,    color:'#6E6860'},
+        {label:'Gastos fijos',               val:costoIndirecto,  color:'#6E6860'},
+        {label:'Tu ganancia',                val:0, color:'#1DB954'},
+      ];
+    } else {
+      costoDirecto = costoEquipo + flete + prep + costoComision + costoGarantia + costoCapital;
+      barItems = [
+        {label:'Costo equipo / parte',       val:costoEquipo,     color:'#E8311A'},
+        {label:'Flete / importación',        val:flete,           color:'#F59E0B'},
+        {label:'Preparación',               val:prep,            color:'#7B2FBE'},
+        {label:'Comisión vendedor',          val:costoComision,   color:'#6E6860'},
+        {label:'Garantías / devoluciones',   val:costoGarantia,   color:'#E8311A'},
+        {label:'Costo capital (días inv.)',  val:costoCapital,    color:'#6E6860'},
+        {label:'Gastos fijos',               val:costoIndirecto,  color:'#6E6860'},
+        {label:'Tu ganancia',                val:0, color:'#1DB954'},
+      ];
+    }
+    labelCosto = 'Comisión + preparación';
+    if(show) document.getElementById('r-costo-mo').textContent = fmt(costoComision + prep);
+
+  } else { // repuestos
+    const costoCompra = v('r-costo-rep');
+    const flete       = v('r-flete-rep');
+    const mermaPct    = v('r-merma-rep');
+    const comisionPct = v('r-comision-rep');
+    const devolPct    = v('r-devol-rep');
+    const diasInv     = v('r-dias-rep') || 1;
+
+    const costoMerma   = (costoCompra + flete) * (mermaPct / 100);
+    const costoComision= precio * (comisionPct / 100);
+    const costoDevol   = precio * (devolPct / 100);
+    const costoCapital = (costoCompra + flete) * 0.02 / 30 * diasInv;
+
+    costoDirecto = costoCompra + flete + costoMerma + costoComision + costoDevol + costoCapital;
+    labelCosto = 'Comisión vendedor';
+    barItems = [
+      {label:'Costo de compra',         val:costoCompra,    color:'#E8311A'},
+      {label:'Flete / importación',     val:flete,          color:'#F59E0B'},
+      {label:'Merma / dañados',         val:costoMerma,     color:'#7B2FBE'},
+      {label:'Comisión vendedor',       val:costoComision,  color:'#6E6860'},
+      {label:'Devoluciones / garantía', val:costoDevol,     color:'#E8311A'},
+      {label:'Costo capital (días inv.)',val:costoCapital,   color:'#6E6860'},
+      {label:'Gastos fijos',            val:costoIndirecto, color:'#6E6860'},
+      {label:'Tu ganancia',             val:0, color:'#1DB954'},
+    ];
+    if(show) document.getElementById('r-costo-mo').textContent = fmt(costoComision);
+  }
+
+  const costoTotal   = costoDirecto + costoIndirecto;
+  const gananciaReal = precio - costoTotal;
+  const margen       = precio > 0 ? (gananciaReal / precio) * 100 : 0;
+  const ingresoMes   = gananciaReal * cantidad;
+
+  if(!show) return;
+
+  // Actualizar ganancia en barItems
+  const gananciaBar = barItems.find(b => b.label === 'Tu ganancia');
+  if(gananciaBar) gananciaBar.val = Math.max(0, gananciaReal);
+
+  // Show panel
+  document.getElementById('res-reparacion').classList.add('show');
+
+  const bigEl = document.getElementById('r-ganancia-real');
+  bigEl.textContent = fmt(gananciaReal);
+  bigEl.className   = 'result-big-num ' + (gananciaReal >= 0 ? 'text-green' : 'text-red');
+
+  document.getElementById('r-precio-cobrado').textContent = fmt(precio);
+  document.getElementById('r-margen').textContent         = fmtPct(margen);
+  document.getElementById('r-costo-total').textContent    = fmt(costoTotal);
+  document.getElementById('r-ingreso-mes').textContent    = fmt(ingresoMes);
+
+  // Adaptar label resultado card
+  document.querySelector('#res-reparacion .result-card:last-child .rc-label').textContent = labelCosto;
+
+  // Bars — filtrar items con val=0
+  buildBars(document.getElementById('r-breakdown-bars'), barItems.filter(b=>b.val>0), precio);
+
+  // Insight
+  const box = document.getElementById('r-insight-box');
+  const tipoLabel = {lab:'reparación', apple:'equipo', repuestos:'producto'}[tipo];
+  if(margen < 0){
+    buildInsight(box,`<div class="insight-title">Estás perdiendo plata en este ${tipoLabel}</div><div class="insight-desc">Tu precio actual no cubre los costos reales. Para no perder deberías cobrar mínimo <strong>${fmt(costoTotal)}</strong> — y para tener un margen saludable del 35%: <strong>${fmt(costoTotal/(1-0.35))}</strong>.</div>`,'red');
+  } else if(margen < 20){
+    buildInsight(box,`<div class="insight-title">Margen muy ajustado: ${fmtPct(margen)}</div><div class="insight-desc">Cualquier imprevisto (garantía, devolución, mes flojo) te pone en rojo. El margen mínimo saludable es <strong>30%</strong>. Considera subir el precio a <strong>${fmt(costoTotal/(1-0.30))}</strong>.</div>`,'amber');
+  } else if(margen < 35){
+    buildInsight(box,`<div class="insight-title">Margen aceptable: ${fmtPct(margen)}</div><div class="insight-desc">Vas bien. Con <strong>${cantidad} ${tipoLabel}s así al mes</strong> generas <strong>${fmt(ingresoMes)}</strong> de ganancia real. Optimizando costos podrías llegar a 40%+ sin subir precios.</div>`,'amber');
+  } else {
+    buildInsight(box,`<div class="insight-title">Excelente margen: ${fmtPct(margen)} ✓</div><div class="insight-desc">Negocio bien estructurado. <strong>${cantidad} ${tipoLabel}s al mes = ${fmt(ingresoMes)}</strong> de ganancia real. El foco ahora es escalar el volumen y proteger ese margen.</div>`,'green');
+  }
+}
+
+function resetModule(mod){
+  document.getElementById('res-'+mod).classList.remove('show');
+  document.getElementById('res-'+mod).scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ══════════════════════════════════════════
+   MÓDULO 2: CALCULAR PRECIO JUSTO
+══════════════════════════════════════════ */
+function calcPrecio(tipo, show=false){
+  let costoBase=0, margenPct=0, resultHtml='', insightHtml='';
+
+  if(tipo==='serv'){
+    const repuesto   = v('ps-repuesto');
+    const tiempo     = v('ps-tiempo');
+    const hora       = v('ps-hora');
+    const fijos      = v('ps-fijos');
+    const margen     = v('ps-margen');
+    const costoMO    = (tiempo/60)*hora;
+    costoBase        = repuesto + costoMO + fijos;
+    margenPct        = margen;
+    const precioMin  = costoBase;
+    const precioRec  = costoBase / (1 - margenPct/100);
+    const precioPrem = precioRec * 1.15;
+
+    if(!show) return;
+    resultHtml = buildPrecioResult(costoBase,precioMin,precioRec,precioPrem,margenPct,'Servicio');
+    insightHtml = buildPrecioInsight(precioRec, costoBase, margenPct);
+    showPrecioResult('serv', resultHtml, insightHtml);
+
+  } else if(tipo==='prod'){
+    const costo  = v('pp-costo');
+    const flete  = v('pp-flete');
+    const dias   = v('pp-dias') || 1;
+    const merma  = v('pp-merma');
+    const margen = v('pp-margen');
+    const costoMerma = (costo+flete) * (merma/100);
+    costoBase    = costo + flete + costoMerma;
+    margenPct    = margen;
+    const precioMin = costoBase;
+    const precioRec = costoBase * (1 + margenPct/100);
+    const precioPrem = precioRec * 1.10;
+
+    if(!show) return;
+    resultHtml = buildPrecioResult(costoBase,precioMin,precioRec,precioPrem,margenPct,'Repuesto');
+    insightHtml = buildPrecioInsight(precioRec, costoBase, margenPct);
+    showPrecioResult('prod', resultHtml, insightHtml);
+
+  } else if(tipo==='acc'){
+    const costo    = v('pa-costo');
+    const flete    = v('pa-flete');
+    const unidades = v('pa-unidades') || 1;
+    const fijosMes = v('pa-fijos-mes');
+    const margen   = v('pa-margen');
+    const fijosUnit= fijosMes / unidades;
+    costoBase      = costo + flete + fijosUnit;
+    margenPct      = margen;
+    const precioMin = costoBase;
+    const precioRec = costoBase * (1 + margenPct/100);
+    const precioPrem = precioRec * 1.15;
+
+    if(!show) return;
+    resultHtml = buildPrecioResult(costoBase,precioMin,precioRec,precioPrem,margenPct,'Accesorio');
+    insightHtml = buildPrecioInsight(precioRec, costoBase, margenPct);
+    showPrecioResult('acc', resultHtml, insightHtml);
+  }
+}
+
+function buildPrecioResult(costoBase, precioMin, precioRec, precioPrem, margenPct, label){
+  return `
+    <div class="result-hero" style="margin-top:24px">
+      <div class="result-hero-inner">
+        <div class="result-hero-label">Precio recomendado · ${label}</div>
+        <div class="result-big-num text-green">${fmt(precioRec)}</div>
+        <div class="result-hero-sub">Margen objetivo: <strong>${fmtPct(margenPct)}</strong> · Costo total: <strong>${fmt(costoBase)}</strong></div>
+      </div>
+    </div>
+    <div class="result-cards" style="margin-top:14px">
+      <div class="result-card danger">
+        <div class="rc-label">Precio mínimo</div>
+        <div class="rc-val text-red">${fmt(precioMin)}</div>
+        <div class="rc-unit">punto de quiebre</div>
+      </div>
+      <div class="result-card highlight">
+        <div class="rc-label">Precio recomendado</div>
+        <div class="rc-val text-green">${fmt(precioRec)}</div>
+        <div class="rc-unit">${fmtPct(margenPct)} de margen</div>
+      </div>
+      <div class="result-card">
+        <div class="rc-label">Precio premium</div>
+        <div class="rc-val">${fmt(precioPrem)}</div>
+        <div class="rc-unit">con servicio diferenciado</div>
+      </div>
+    </div>`;
+}
+
+function buildPrecioInsight(precioRec, costoBase, margenPct){
+  const ganancia = precioRec - costoBase;
+  if(margenPct >= 50){
+    return `<div class="insight-box green" style="margin-top:14px"><span class="insight-icon">💰</span><div><div class="insight-title">Margen sólido: ${fmtPct(margenPct)}</div><div class="insight-desc">Con este precio tienes espacio para hacer descuentos puntuales, cubrir imprevistos y seguir siendo rentable. La clave es <strong>cobrar este precio consistentemente</strong> y evitar bajar por presión del cliente.</div></div></div>`;
+  } else if(margenPct >= 30){
+    return `<div class="insight-box amber" style="margin-top:14px"><span class="insight-icon">⚠️</span><div><div class="insight-title">Margen ajustado: ${fmtPct(margenPct)}</div><div class="insight-desc">Funciona, pero considera si puedes llegar a <strong>${fmtPct(margenPct+15)}</strong>. Con ese margen adicional de ${fmt(ganancia*0.15)} por unidad tienes un colchón real para crecer.</div></div></div>`;
+  } else {
+    return `<div class="insight-box red" style="margin-top:14px"><span class="insight-icon">🚨</span><div><div class="insight-title">Margen insuficiente: ${fmtPct(margenPct)}</div><div class="insight-desc">Con menos del 30% de margen cualquier improvisto (garantía, devolución, mes flojo) te pone en rojo. Revisa si puedes reducir costos o si el mercado aguanta un precio más alto.</div></div></div>`;
+  }
+}
+
+function showPrecioResult(tipo, resultHtml, insightHtml){
+  const panel = document.getElementById('res-precio-'+tipo);
+  panel.innerHTML = resultHtml + insightHtml +
+    `<div class="result-cta" style="margin-top:14px">
+      <div class="result-cta-title t-display">¿Quieres saber si tus precios actuales son correctos?</div>
+      <p class="result-cta-sub">En la demo te mostramos cómo MonKeys Lab te da esta visibilidad <strong>automáticamente</strong> — para cada producto y servicio.</p>
+      <a class="btn-wa-result" href="https://wa.link/kzkc0n" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.117 1.528 5.845L.053 23.338a.75.75 0 0 0 .933.933l5.493-1.475A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.706 9.706 0 0 1-4.95-1.355l-.355-.212-3.683.988.988-3.607-.231-.373A9.694 9.694 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+        Ver cómo funciona en vivo
+      </a>
+      <a class="btn-cal-result" href="https://calendar.app.google/RtZqsytYkhhLRdze7" target="_blank" rel="noopener noreferrer">📅 Agendar demo gratuita →</a>
+    </div>`;
+  panel.classList.add('show');
+  document.getElementById('reset-precio-'+tipo).style.display='block';
+}
+
+function resetPrecio(tipo){
+  const panel = document.getElementById('res-precio-'+tipo);
+  panel.classList.remove('show');
+  panel.innerHTML='';
+  document.getElementById('reset-precio-'+tipo).style.display='none';
+}
+
+/* ══════════════════════════════════════════
+   MÓDULO 3: PÉRDIDA POR DESORDEN
+══════════════════════════════════════════ */
+function calcPerdida(show=false){
+  const reclamos       = v('p-reclamos');
+  const montoReclamo   = v('p-monto-reclamo');
+  const tiempoBusq     = v('p-tiempo-busqueda');
+  const llamadas       = v('p-llamadas');
+  const valorHora      = v('p-valor-hora');
+  const paradas        = v('p-paradas');
+  const reprocesos     = v('p-reprocesos');
+  const costoReproceso = v('p-costo-reproceso');
+
+  // Días laborables: ~22/mes
+  const diasMes = 22;
+  const perdidaReclamos   = reclamos * montoReclamo;
+  // Tiempo perdido en búsqueda (llamadas/día * días * minutos búsqueda * valor hora)
+  const minutosMes        = llamadas * diasMes * tiempoBusq;
+  const perdidaTiempo     = (minutosMes / 60) * valorHora;
+  // Paradas por stock: promedio 30 min parada = 0.5h
+  const perdidaParadas    = paradas * 0.5 * valorHora;
+  const perdidaReprocesos = reprocesos * costoReproceso;
+
+  const totalMes  = perdidaReclamos + perdidaTiempo + perdidaParadas + perdidaReprocesos;
+  const totalAnio = totalMes * 12;
+
+  if(!show) return;
+
+  document.getElementById('res-perdida').classList.add('show');
+  document.getElementById('p-total-perdida').textContent = fmt(totalMes);
+  document.getElementById('p-perdida-anual').textContent = fmt(totalAnio);
+  document.getElementById('p-r-reclamos').textContent   = fmt(perdidaReclamos);
+  document.getElementById('p-r-tiempo').textContent     = fmt(perdidaTiempo + perdidaParadas);
+  document.getElementById('p-r-reprocesos').textContent = fmt(perdidaReprocesos);
+
+  buildBars(document.getElementById('p-breakdown-bars'), [
+    {label:'Reclamaciones cedidas',   val:perdidaReclamos,              color:'#E8311A'},
+    {label:'Tiempo en búsqueda de info', val:perdidaTiempo,             color:'#F59E0B'},
+    {label:'Paradas por falta de stock', val:perdidaParadas,            color:'#7B2FBE'},
+    {label:'Reprocesos y garantías',  val:perdidaReprocesos,            color:'#E8311A'},
+  ], totalMes);
+
+  // Insight
+  const box = document.getElementById('p-insight-box');
+  if(totalMes >= 1000000){
+    buildInsight(box,`<div class="insight-title">Estás perdiendo más de ${fmt(totalMes)} al mes</div><div class="insight-desc">Al año son <strong>${fmt(totalAnio)}</strong>. Eso es suficiente para pagar el sistema MonKeys Lab durante <strong>más de ${Math.floor(totalAnio/1200000)} años</strong> y aún quedar ganando.</div>`,'red');
+  } else if(totalMes >= 300000){
+    buildInsight(box,`<div class="insight-title">${fmt(totalMes)}/mes es demasiado para ignorarlo</div><div class="insight-desc">En un año eso es <strong>${fmt(totalAnio)}</strong> que se van sin que puedas verlos. La buena noticia: la mayoría de estas pérdidas desaparecen con el sistema correcto en las primeras semanas.</div>`,'amber');
+  } else {
+    buildInsight(box,`<div class="insight-title">Tus pérdidas son controlables — por ahora</div><div class="insight-desc">Perder <strong>${fmt(totalMes)}/mes</strong> parece poco, pero al año son <strong>${fmt(totalAnio)}</strong>. Y estos números tienden a crecer conforme crece el negocio. Mejor cerrar las brechas ahora.</div>`,'amber');
+  }
+}
+</script>
+</body>
+</html>
